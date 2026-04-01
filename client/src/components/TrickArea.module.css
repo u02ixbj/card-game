@@ -1,0 +1,32 @@
+.area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1.5rem;
+  min-height: 130px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 12px;
+}
+
+.play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.name {
+  color: #e0e0e0;
+  font-size: 0.75rem;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  font-style: italic;
+}

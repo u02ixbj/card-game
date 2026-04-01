@@ -1,0 +1,68 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green: #2d6a4f;
+  --green-dark: #1b4332;
+  --green-light: #52b788;
+  --card-bg: #fff;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  --red: #c0392b;
+  --text: #1a1a1a;
+  --muted: #666;
+  --radius: 8px;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--green-dark);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input {
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.btn-primary {
+  background: var(--green-light);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: var(--text);
+}
+
+.btn-danger {
+  background: var(--red);
+  color: #fff;
+}
+
+.error {
+  color: var(--red);
+  font-size: 0.875rem;
+  margin-top: 0.35rem;
+}

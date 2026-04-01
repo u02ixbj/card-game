@@ -1,0 +1,70 @@
+.card {
+  width: 64px;
+  height: 96px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: Georgia, serif;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.card:not(:disabled):hover {
+  transform: translateY(-8px);
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.selected {
+  border-color: #f0c040;
+  transform: translateY(-12px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+.red {
+  color: var(--red);
+}
+
+.black {
+  color: #111;
+}
+
+.faceDown {
+  background: repeating-linear-gradient(
+    45deg,
+    #1b4332,
+    #1b4332 4px,
+    #2d6a4f 4px,
+    #2d6a4f 8px
+  );
+  cursor: default;
+}
+
+.corner {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bottom {
+  top: auto;
+  bottom: 5px;
+  left: auto;
+  right: 7px;
+  transform: rotate(180deg);
+}
+
+.suit {
+  font-size: 1.5rem;
+}
