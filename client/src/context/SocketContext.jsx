@@ -8,7 +8,10 @@ export function SocketProvider({ children }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const socket = io({ transports: ['websocket'] });
+    // In production VITE_SERVER_URL points to the Railway server.
+    // In dev it's empty and the Vite proxy handles routing.
+    const serverUrl = import.meta.env.VITE_SERVER_URL ?? '';
+    const socket = io(serverUrl, { transports: ['websocket'] });
     socketRef.current = socket;
 
     socket.on('connect', () => setConnected(true));

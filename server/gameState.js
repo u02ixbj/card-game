@@ -60,6 +60,7 @@ function createRoom(hostId, hostUsername) {
     phase: 'lobby',
     players: [{ id: hostId, username: hostUsername, connected: true }],
     hostId,
+    cohosts: [],   // array of player indices that can advance rounds
     config: {
       peakCards: null,   // null = auto (floor(52/numPlayers))
       noTrumpRounds: 0,  // 0, 1, or 2
@@ -383,13 +384,37 @@ function _endRound(room) {
 }
 
 /**
- * Advances to the next round. Call this after clients have acknowledged
- * the round-over state. Returns { room } or { error }.
+ * Toggles co-host status for a player. Only the host can do this.
+ * `targetIndex` is the 0-based index in room.players (cannot be 0/host itself).
  */
-function advanceToNextRound(code, hostId) {
+function setCohost(code, hostId, targetIndex, value) {
   const room = rooms.get(code);
   if (!room) return { error: 'Room not found' };
-  if (room.hostId !== hostId) return { error: 'Only the host can advance the round' };
+  if (room.hostId !== hostId) return { error: 'Only the host can assign co-hosts' };
+  if (targetIndex === 0) return { error: 'The host is already the host' };
+  if (targetIndex < 0 || targetIndex >= room.players.length) return { error: 'Invalid player' };
+
+  if (value) {
+    if (!room.cohosts.includes(targetIndex)) room.cohosts.push(targetIndex);
+  } else {
+    room.cohosts = room.cohosts.filter(i => i !== targetIndex);
+  }
+  return { room };
+}
+
+/**
+ * Advances to the next round. Call this after clients have acknowledged
+ * the round-over state. Host or any co-host may call this.
+ * Returns { room } or { error }.
+ */
+function advanceToNextRound(code, playerId) {
+  const room = rooms.get(code);
+  if (!room) return { error: 'Room not found' };
+
+  const playerIndex = room.players.findIndex(p => p.id === playerId);
+  const isAuthorized = room.hostId === playerId || room.cohosts.includes(playerIndex);
+  if (!isAuthorized) return { error: 'Only the host or a co-host can advance the round' };
+
   if (room.phase !== 'playing') return { error: 'Game is not in progress' };
   if (room.game.round.phase !== 'roundOver') return { error: 'Round is not over yet' };
 
@@ -413,6 +438,8 @@ function getPublicState(code, playerId) {
     phase: room.phase,
     players: room.players.map(p => ({ username: p.username, connected: p.connected })),
     hostId: room.hostId,
+    cohosts: room.cohosts,
+    myIndex: playerIndex,
     config: room.config,
     scores: game?.scores ?? null,
     roundIndex: game?.roundIndex ?? null,
@@ -454,6 +481,7 @@ module.exports = {
   reconnectPlayer,
   getRoomByPlayerId,
   updateConfig,
+  setCohost,
   startGame,
   placeBid,
   playCard,

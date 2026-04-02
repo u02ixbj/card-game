@@ -14,7 +14,7 @@ function AppInner() {
   }
 
   if (gameState.phase === 'finished') {
-    return <GameOver gameState={gameState} />;
+    return <GameOver gameState={gameState} onExit={actions.clearGame} />;
   }
 
   return (

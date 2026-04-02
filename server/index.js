@@ -14,6 +14,7 @@ const {
   reconnectPlayer,
   getRoomByPlayerId,
   updateConfig,
+  setCohost,
   startGame,
   placeBid,
   playCard,
@@ -127,6 +128,20 @@ io.on('connection', (socket) => {
     if (!room) return emitError(socket, 'Not in a room');
 
     const result = updateConfig(room.code, socket.id, config);
+    if (result.error) return emitError(socket, result.error);
+
+    broadcastRoom(result.room);
+  });
+
+  /**
+   * Host toggles co-host status for a player.
+   * Payload: { targetIndex: number, value: boolean }
+   */
+  socket.on('room:setCohost', ({ targetIndex, value } = {}) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+
+    const result = setCohost(room.code, socket.id, targetIndex, value);
     if (result.error) return emitError(socket, result.error);
 
     broadcastRoom(result.room);

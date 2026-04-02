@@ -1,4 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+
+const SESSION_KEY = 'bugger-bridge-session';
 
 /**
  * Manages all game state received from the server and exposes
@@ -7,29 +9,66 @@ import { useEffect, useState, useCallback } from 'react';
 export function useGame(socket) {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
+  const reconnecting = useRef(false);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('game:state', (state) => {
+    function handleConnect() {
+      const saved = localStorage.getItem(SESSION_KEY);
+      if (!saved) return;
+      try {
+        const { code, username } = JSON.parse(saved);
+        reconnecting.current = true;
+        socket.emit('room:reconnect', { code, username });
+      } catch {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+
+    function handleState(state) {
+      reconnecting.current = false;
       setGameState(state);
       setError(null);
-    });
 
-    socket.on('error', ({ message }) => {
+      // Persist session so page refresh can reconnect
+      const me = state.players?.[state.myIndex];
+      if (me && state.code && state.phase !== 'finished') {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ code: state.code, username: me.username }));
+      } else {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+
+    function handleError({ message }) {
+      // If a reconnect attempt failed, clear stale session and go back to lobby
+      if (reconnecting.current) {
+        reconnecting.current = false;
+        localStorage.removeItem(SESSION_KEY);
+      }
       setError(message);
-    });
+    }
 
-    // Clear error after 4 seconds
-    let timer;
-    if (error) timer = setTimeout(() => setError(null), 4000);
+    socket.on('connect', handleConnect);
+    socket.on('game:state', handleState);
+    socket.on('error', handleError);
+
+    // If socket is already connected (e.g. effect ran after connect fired), try now
+    if (socket.connected) handleConnect();
 
     return () => {
-      socket.off('game:state');
-      socket.off('error');
-      clearTimeout(timer);
+      socket.off('connect', handleConnect);
+      socket.off('game:state', handleState);
+      socket.off('error', handleError);
     };
-  }, [socket, error]);
+  }, [socket]);
+
+  // Auto-dismiss error after 4 seconds
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(null), 4000);
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const createRoom = useCallback((username) => {
     socket?.emit('room:create', { username });
@@ -59,9 +98,18 @@ export function useGame(socket) {
     socket?.emit('game:nextRound');
   }, [socket]);
 
+  const setCohost = useCallback((targetIndex, value) => {
+    socket?.emit('room:setCohost', { targetIndex, value });
+  }, [socket]);
+
+  const clearGame = useCallback(() => {
+    localStorage.removeItem(SESSION_KEY);
+    setGameState(null);
+  }, []);
+
   return {
     gameState,
     error,
-    actions: { createRoom, joinRoom, updateConfig, startGame, placeBid, playCard, nextRound },
+    actions: { createRoom, joinRoom, updateConfig, setCohost, startGame, placeBid, playCard, nextRound, clearGame },
   };
 }

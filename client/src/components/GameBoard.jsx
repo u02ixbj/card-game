@@ -9,7 +9,7 @@ import styles from './GameBoard.module.css';
 const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
 export default function GameBoard({ gameState, error, actions }) {
-  const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex } = gameState;
+  const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex, cohosts, myIndex: myTopIndex } = gameState;
 
   // Still in lobby
   if (phase === 'lobby') {
@@ -49,6 +49,7 @@ export default function GameBoard({ gameState, error, actions }) {
   const isRoundOver = roundPhase === 'roundOver';
   const isLastRound = roundIndex >= roundSequence.length;
   const totalRounds = roundSequence.length;
+  const canAdvance = myTopIndex === 0 || cohosts?.includes(myTopIndex);
 
   return (
     <div className={styles.board}>
@@ -99,9 +100,15 @@ export default function GameBoard({ gameState, error, actions }) {
         {isRoundOver && (
           <div className={styles.roundOver}>
             <h2>Round over!</h2>
-            <button className="btn-primary" onClick={actions.nextRound}>
-              {isLastRound ? 'See final scores' : 'Next round'}
-            </button>
+            {canAdvance ? (
+              <button className="btn-primary" onClick={actions.nextRound}>
+                {isLastRound ? 'See final scores' : 'Next round'}
+              </button>
+            ) : (
+              <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+                Waiting for host to advance…
+              </p>
+            )}
           </div>
         )}
 
