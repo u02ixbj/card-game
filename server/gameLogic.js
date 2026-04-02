@@ -96,28 +96,36 @@ function determineFirstDealer(numPlayers) {
  */
 function generateRoundSequence(numPlayers, peakCards = null, noTrumpRounds = 0, minCards = 3) {
   if (peakCards === null) {
-    // Default peak: as high as the deck allows
     peakCards = Math.floor(52 / numPlayers);
   }
 
-  // Build the ascending+descending sequence (excluding peak duplicates)
   const ascending = [];
   for (let c = minCards; c <= peakCards; c++) ascending.push(c);
-  const descending = ascending.slice(0, -1).reverse(); // drop peak, reverse
-  let sequence = [...ascending, ...descending];
+  const descending = ascending.slice(0, -1).reverse();
 
-  // Trim or extend to ensure total rounds % numPlayers === 0
-  while (sequence.length % numPlayers !== 0) {
-    sequence.push(sequence[sequence.length - 1] + 1 <= peakCards
-      ? sequence[sequence.length - 1] + 1
-      : minCards);
+  // Base sequence has 1 peak round. Add extra peak rounds in the middle until
+  // total is divisible by numPlayers. This keeps start === end === minCards
+  // and never adds rounds that go back up after the descent.
+  let numPeakRounds = 1;
+  let totalLen = ascending.length + descending.length;
+  while (totalLen % numPlayers !== 0) {
+    numPeakRounds++;
+    totalLen++;
   }
 
-  // Place no-trump rounds at/around the peak (middle of sequence)
-  const midIndex = Math.floor((sequence.length - 1) / 2);
+  const sequence = [
+    ...ascending,
+    ...Array(numPeakRounds - 1).fill(peakCards),
+    ...descending,
+  ];
+
+  // Place no-trump rounds at the centre of the peak plateau
+  const peakStart = ascending.length - 1;
+  const peakEnd = peakStart + numPeakRounds - 1;
+  const midPeak = Math.floor((peakStart + peakEnd) / 2);
   const noTrumpIndices = new Set();
-  if (noTrumpRounds >= 1) noTrumpIndices.add(midIndex);
-  if (noTrumpRounds >= 2) noTrumpIndices.add(midIndex + 1);
+  if (noTrumpRounds >= 1) noTrumpIndices.add(midPeak);
+  if (noTrumpRounds >= 2) noTrumpIndices.add(midPeak + 1 <= peakEnd ? midPeak + 1 : midPeak - 1);
 
   return sequence.map((cardsPerPlayer, i) => ({
     cardsPerPlayer,

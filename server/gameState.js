@@ -109,8 +109,13 @@ function reconnectPlayer(code, newSocketId, username) {
   const player = room.players.find(p => p.username === username);
   if (!player) return { error: 'Player not found in room' };
 
+  const oldId = player.id;
   player.id = newSocketId;
   player.connected = true;
+
+  // Keep hostId in sync when the host reconnects with a new socket ID
+  if (room.hostId === oldId) room.hostId = newSocketId;
+
   return { room, player };
 }
 

@@ -13,7 +13,7 @@ export default function GameBoard({ gameState, error, actions }) {
 
   // Still in lobby
   if (phase === 'lobby') {
-    return <WaitingRoom gameState={gameState} actions={actions} />;
+    return <WaitingRoom gameState={gameState} actions={actions} error={error} />;
   }
 
   const { myHand, myIndex, bids, tricksTaken, trumpCard, noTrump, cardsPerPlayer,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { generateRoundSequence, autoPeak } from '../utils/gameUtils';
 import styles from './WaitingRoom.module.css';
 
-export default function WaitingRoom({ gameState, actions }) {
+export default function WaitingRoom({ gameState, actions, error }) {
   const { code, players, config, myIndex, cohosts } = gameState;
   const isHost = myIndex === 0;
 
@@ -190,6 +190,7 @@ export default function WaitingRoom({ gameState, actions }) {
         {isHost && players.filter(p => p.connected).length < 3 && (
           <p className="error">Need at least 3 players</p>
         )}
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   );

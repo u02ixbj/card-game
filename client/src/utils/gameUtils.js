@@ -10,23 +10,33 @@ export function generateRoundSequence(numPlayers, peakCards = null, noTrumpRound
   if (!numPlayers || numPlayers < 2) return [];
 
   const resolvedPeak = peakCards ?? Math.floor(52 / numPlayers);
-
   if (resolvedPeak < minCards) return [];
 
   const ascending = [];
   for (let c = minCards; c <= resolvedPeak; c++) ascending.push(c);
   const descending = ascending.slice(0, -1).reverse();
-  let sequence = [...ascending, ...descending];
 
-  while (sequence.length % numPlayers !== 0) {
-    const last = sequence[sequence.length - 1];
-    sequence.push(last + 1 <= resolvedPeak ? last + 1 : minCards);
+  // Add extra peak rounds in the middle until divisible by numPlayers.
+  // Keeps start === end === minCards and never appends rounds after the descent.
+  let numPeakRounds = 1;
+  let totalLen = ascending.length + descending.length;
+  while (totalLen % numPlayers !== 0) {
+    numPeakRounds++;
+    totalLen++;
   }
 
-  const midIndex = Math.floor((sequence.length - 1) / 2);
+  const sequence = [
+    ...ascending,
+    ...Array(numPeakRounds - 1).fill(resolvedPeak),
+    ...descending,
+  ];
+
+  const peakStart = ascending.length - 1;
+  const peakEnd = peakStart + numPeakRounds - 1;
+  const midPeak = Math.floor((peakStart + peakEnd) / 2);
   const noTrumpIndices = new Set();
-  if (noTrumpRounds >= 1) noTrumpIndices.add(midIndex);
-  if (noTrumpRounds >= 2) noTrumpIndices.add(midIndex + 1);
+  if (noTrumpRounds >= 1) noTrumpIndices.add(midPeak);
+  if (noTrumpRounds >= 2) noTrumpIndices.add(midPeak + 1 <= peakEnd ? midPeak + 1 : midPeak - 1);
 
   return sequence.map((cardsPerPlayer, i) => ({
     cardsPerPlayer,

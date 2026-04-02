@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 const SESSION_KEY = 'bugger-bridge-session';
+const storage = sessionStorage; // tab-scoped: survives refresh, doesn't bleed to other tabs
 
 /**
  * Manages all game state received from the server and exposes
@@ -15,14 +16,14 @@ export function useGame(socket) {
     if (!socket) return;
 
     function handleConnect() {
-      const saved = localStorage.getItem(SESSION_KEY);
+      const saved = storage.getItem(SESSION_KEY);
       if (!saved) return;
       try {
         const { code, username } = JSON.parse(saved);
         reconnecting.current = true;
         socket.emit('room:reconnect', { code, username });
       } catch {
-        localStorage.removeItem(SESSION_KEY);
+        storage.removeItem(SESSION_KEY);
       }
     }
 
@@ -34,9 +35,9 @@ export function useGame(socket) {
       // Persist session so page refresh can reconnect
       const me = state.players?.[state.myIndex];
       if (me && state.code && state.phase !== 'finished') {
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ code: state.code, username: me.username }));
+        storage.setItem(SESSION_KEY, JSON.stringify({ code: state.code, username: me.username }));
       } else {
-        localStorage.removeItem(SESSION_KEY);
+        storage.removeItem(SESSION_KEY);
       }
     }
 
@@ -44,13 +45,13 @@ export function useGame(socket) {
       // If a reconnect attempt failed, clear stale session and go back to lobby
       if (reconnecting.current) {
         reconnecting.current = false;
-        localStorage.removeItem(SESSION_KEY);
+        storage.removeItem(SESSION_KEY);
       }
       setError(message);
     }
 
     function handleKicked() {
-      localStorage.removeItem(SESSION_KEY);
+      storage.removeItem(SESSION_KEY);
       setGameState(null);
       setError('You were removed from the room.');
     }
@@ -115,7 +116,7 @@ export function useGame(socket) {
   }, [socket]);
 
   const clearGame = useCallback(() => {
-    localStorage.removeItem(SESSION_KEY);
+    storage.removeItem(SESSION_KEY);
     setGameState(null);
   }, []);
 
