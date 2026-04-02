@@ -49,9 +49,16 @@ export function useGame(socket) {
       setError(message);
     }
 
+    function handleKicked() {
+      localStorage.removeItem(SESSION_KEY);
+      setGameState(null);
+      setError('You were removed from the room.');
+    }
+
     socket.on('connect', handleConnect);
     socket.on('game:state', handleState);
     socket.on('error', handleError);
+    socket.on('kicked', handleKicked);
 
     // If socket is already connected (e.g. effect ran after connect fired), try now
     if (socket.connected) handleConnect();
@@ -60,6 +67,7 @@ export function useGame(socket) {
       socket.off('connect', handleConnect);
       socket.off('game:state', handleState);
       socket.off('error', handleError);
+      socket.off('kicked', handleKicked);
     };
   }, [socket]);
 
@@ -102,6 +110,10 @@ export function useGame(socket) {
     socket?.emit('room:setCohost', { targetIndex, value });
   }, [socket]);
 
+  const kickPlayer = useCallback((targetIndex) => {
+    socket?.emit('room:kick', { targetIndex });
+  }, [socket]);
+
   const clearGame = useCallback(() => {
     localStorage.removeItem(SESSION_KEY);
     setGameState(null);
@@ -110,6 +122,6 @@ export function useGame(socket) {
   return {
     gameState,
     error,
-    actions: { createRoom, joinRoom, updateConfig, setCohost, startGame, placeBid, playCard, nextRound, clearGame },
+    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame },
   };
 }

@@ -14,6 +14,7 @@ const {
   reconnectPlayer,
   getRoomByPlayerId,
   updateConfig,
+  kickPlayer,
   setCohost,
   startGame,
   placeBid,
@@ -130,6 +131,23 @@ io.on('connection', (socket) => {
     const result = updateConfig(room.code, socket.id, config);
     if (result.error) return emitError(socket, result.error);
 
+    broadcastRoom(result.room);
+  });
+
+  /**
+   * Host kicks a player from the lobby.
+   * Payload: { targetIndex: number }
+   */
+  socket.on('room:kick', ({ targetIndex } = {}) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+
+    const result = kickPlayer(room.code, socket.id, targetIndex);
+    if (result.error) return emitError(socket, result.error);
+
+    if (result.kickedSocketId) {
+      io.to(result.kickedSocketId).emit('kicked');
+    }
     broadcastRoom(result.room);
   });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateRoundSequence, autoPeak } from '../utils/gameUtils';
 import styles from './WaitingRoom.module.css';
 
@@ -6,39 +6,47 @@ export default function WaitingRoom({ gameState, actions }) {
   const { code, players, config, myIndex, cohosts } = gameState;
   const isHost = myIndex === 0;
 
-  // Local state for the peak-cards field — tracks the text input value separately
-  // so the user can type freely before committing.
-  const [peakInput, setPeakInput] = useState('');
+  // Local state keeps inputs responsive; syncs from server config on change
   const [peakAuto, setPeakAuto] = useState(config.peakCards === null);
+  const [localMinCards, setLocalMinCards] = useState(String(config.minCards));
+  const [localPeakCards, setLocalPeakCards] = useState(String(config.peakCards ?? autoPeak(players.length)));
+
+  // Keep local inputs in sync if config changes from server (e.g. after reconnect)
+  useEffect(() => { setLocalMinCards(String(config.minCards)); }, [config.minCards]);
+  useEffect(() => {
+    if (config.peakCards !== null) setLocalPeakCards(String(config.peakCards));
+  }, [config.peakCards]);
 
   const numPlayers = players.length;
-  const resolvedPeak = peakAuto ? autoPeak(numPlayers) : (config.peakCards ?? autoPeak(numPlayers));
+  const resolvedPeak = peakAuto ? autoPeak(numPlayers) : (parseInt(localPeakCards, 10) || autoPeak(numPlayers));
 
   const preview = generateRoundSequence(
     numPlayers,
-    peakAuto ? null : config.peakCards,
+    peakAuto ? null : (parseInt(localPeakCards, 10) || null),
     config.noTrumpRounds,
-    config.minCards,
+    parseInt(localMinCards, 10) || config.minCards,
   );
 
   function handlePeakAutoChange(e) {
     const auto = e.target.checked;
     setPeakAuto(auto);
-    actions.updateConfig({ peakCards: auto ? null : resolvedPeak });
+    actions.updateConfig({ peakCards: auto ? null : (parseInt(localPeakCards, 10) || autoPeak(numPlayers)) });
   }
 
   function handlePeakInput(e) {
     const raw = e.target.value;
-    setPeakInput(raw);
+    setLocalPeakCards(raw);
     const n = parseInt(raw, 10);
-    if (!isNaN(n) && n >= config.minCards && n <= 52) {
+    if (!isNaN(n) && n >= 1 && n <= 52) {
       actions.updateConfig({ peakCards: n });
     }
   }
 
   function handleMinCards(e) {
-    const n = parseInt(e.target.value, 10);
-    if (!isNaN(n) && n >= 1 && n <= resolvedPeak) {
+    const raw = e.target.value;
+    setLocalMinCards(raw);
+    const n = parseInt(raw, 10);
+    if (!isNaN(n) && n >= 1) {
       actions.updateConfig({ minCards: n });
     }
   }
@@ -62,13 +70,22 @@ export default function WaitingRoom({ gameState, actions }) {
                   {!p.connected && <span className={styles.dc}> disconnected</span>}
                 </span>
                 {isHost && i !== 0 && (
-                  <button
-                    className={isCohost ? 'btn-secondary' : 'btn-secondary'}
-                    style={{ fontSize: '0.75rem', padding: '2px 8px' }}
-                    onClick={() => actions.setCohost(i, !isCohost)}
-                  >
-                    {isCohost ? 'Remove co-host' : 'Make co-host'}
-                  </button>
+                  <span style={{ display: 'flex', gap: '4px' }}>
+                    <button
+                      className="btn-secondary"
+                      style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                      onClick={() => actions.setCohost(i, !isCohost)}
+                    >
+                      {isCohost ? 'Remove co-host' : 'Co-host'}
+                    </button>
+                    <button
+                      className="btn-danger"
+                      style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                      onClick={() => actions.kickPlayer(i)}
+                    >
+                      Kick
+                    </button>
+                  </span>
                 )}
               </li>
             );
@@ -85,8 +102,7 @@ export default function WaitingRoom({ gameState, actions }) {
               <input
                 type="number"
                 min={1}
-                max={resolvedPeak}
-                value={config.minCards}
+                value={localMinCards}
                 onChange={handleMinCards}
                 className={styles.numInput}
               />
@@ -110,9 +126,9 @@ export default function WaitingRoom({ gameState, actions }) {
                 {!peakAuto && (
                   <input
                     type="number"
-                    min={config.minCards}
+                    min={1}
                     max={52}
-                    value={peakInput || config.peakCards || autoPeak(numPlayers)}
+                    value={localPeakCards}
                     onChange={handlePeakInput}
                     className={styles.numInput}
                   />

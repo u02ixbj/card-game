@@ -384,6 +384,28 @@ function _endRound(room) {
 }
 
 /**
+ * Kicks a player from the lobby. Only allowed before game starts.
+ * Returns { room, kickedSocketId } or { error }.
+ */
+function kickPlayer(code, hostId, targetIndex) {
+  const room = rooms.get(code);
+  if (!room) return { error: 'Room not found' };
+  if (room.hostId !== hostId) return { error: 'Only the host can kick players' };
+  if (room.phase !== 'lobby') return { error: 'Cannot kick players once the game has started' };
+  if (targetIndex === 0) return { error: 'Cannot kick the host' };
+  if (targetIndex < 0 || targetIndex >= room.players.length) return { error: 'Invalid player' };
+
+  const kicked = room.players.splice(targetIndex, 1)[0];
+
+  // Rebuild cohosts: drop kicked index, decrement any higher indices
+  room.cohosts = room.cohosts
+    .filter(i => i !== targetIndex)
+    .map(i => (i > targetIndex ? i - 1 : i));
+
+  return { room, kickedSocketId: kicked.id };
+}
+
+/**
  * Toggles co-host status for a player. Only the host can do this.
  * `targetIndex` is the 0-based index in room.players (cannot be 0/host itself).
  */
@@ -481,6 +503,7 @@ module.exports = {
   reconnectPlayer,
   getRoomByPlayerId,
   updateConfig,
+  kickPlayer,
   setCohost,
   startGame,
   placeBid,
