@@ -1,6 +1,25 @@
 # Bugger Bridge
 
-A trick-taking card game with online multiplayer. 2–8 players, bid exactly the tricks you'll take.
+A trick-taking card game with online multiplayer. 2–8 players, bid exactly the tricks you'll take each round.
+
+## Play now
+
+**[card-game-one-gray.vercel.app](https://card-game-one-gray.vercel.app)**
+
+## How to play
+
+- Each round, players are dealt a hand of cards and bid how many tricks they think they'll win
+- You score points only if you hit your bid exactly: 10 + bid × (bid + 1) / 2
+- The number of cards dealt goes up then back down across rounds (e.g. 1→2→...→peak→...→2→1)
+- The dealer cannot bid a number that would let all players hit their bids (bust rule)
+- A trump suit is revealed each round — trump cards beat all other suits
+- No-trump rounds are mixed in where no suit is special
+
+### Jokers (optional)
+- Enable jokers when creating a game — adds a Big Joker and Small Joker to the deck
+- Big Joker > Small Joker > all other cards
+- Leading a joker sets the led suit to trump; in no-trump rounds you declare a suit and everyone must follow it
+- If another player holds the other joker, they don't have to follow — they can play anything
 
 ## Running locally
 
@@ -20,24 +39,25 @@ Open `http://localhost:3000`. You need at least 2 browser tabs to start a game.
 2. In `client/vite.config.js` add `host: true` to the `server` block
 3. Other devices on the network open `http://192.168.1.50:3000`
 
-## TODO — Public deployment (Railway + Vercel)
+## Public deployment
 
-The app is set up and ready for deployment but needs the repo owner (`u02ixbj`) to authorise the Railway GitHub app. Steps when ready:
+**Client → Vercel:** [card-game-one-gray.vercel.app](https://card-game-one-gray.vercel.app)
+**Server → Railway:** [card-game-production-e29f.up.railway.app](https://card-game-production-e29f.up.railway.app)
 
-**Server → Railway**
-- Root directory: `server`
-- Start command: `npm start`
-- Environment variable: `CLIENT_URL=<vercel-url>`
+### Environment variables
 
-**Client → Vercel**
-- Root directory: `client`
-- Framework: Vite
-- Environment variable: `VITE_SERVER_URL=<railway-url>`
+| Service | Key | Value |
+|---------|-----|-------|
+| Vercel | `VITE_SERVER_URL` | `https://card-game-production-e29f.up.railway.app` |
+| Railway | `CLIENT_URL` | `https://card-game-one-gray.vercel.app` |
 
-Alternative if GitHub auth is still an issue: deploy via CLI (`railway up` / `vercel`) directly from local folders — no GitHub connection needed.
+### Re-deploying
+
+- **Vercel** auto-deploys on push to `main`. After changing env vars, manually redeploy with build cache cleared.
+- **Railway** auto-deploys on push to `main`.
 
 ## Tech stack
 
-- **Frontend:** React + Vite
-- **Backend:** Node.js + Express + Socket.IO
-- **State:** In-memory (no database)
+- **Frontend:** React + Vite, deployed on Vercel
+- **Backend:** Node.js + Express + Socket.IO, deployed on Railway
+- **State:** In-memory (no database — restarting the server ends all active games)
