@@ -65,6 +65,7 @@ function createRoom(hostId, hostUsername) {
       peakCards: null,   // null = auto (floor(52/numPlayers))
       noTrumpRounds: 0,  // 0, 1, or 2
       minCards: 3,
+      useJokers: false,
     },
     game: null,
   };
@@ -138,7 +139,7 @@ function updateConfig(code, hostId, config) {
   if (room.hostId !== hostId) return { error: 'Only the host can change settings' };
   if (room.phase !== 'lobby') return { error: 'Cannot change settings once game has started' };
 
-  const allowed = ['peakCards', 'noTrumpRounds', 'minCards'];
+  const allowed = ['peakCards', 'noTrumpRounds', 'minCards', 'useJokers'];
   for (const key of allowed) {
     if (config[key] !== undefined) room.config[key] = config[key];
   }
@@ -214,7 +215,7 @@ function _startRound(room) {
   const { cardsPerPlayer, noTrump } = game.roundSequence[game.roundIndex];
   const numPlayers = room.players.length;
 
-  const { hands, trumpCard } = dealCards(numPlayers, cardsPerPlayer, noTrump);
+  const { hands, trumpCard } = dealCards(numPlayers, cardsPerPlayer, noTrump, room.config.useJokers);
 
   // Bidding starts left of dealer, dealer bids last
   const bidOrder = [];
@@ -295,7 +296,7 @@ function placeBid(code, playerId, bid) {
 /**
  * Plays a card for a player. Returns { room, trickComplete, roundComplete } or { error }.
  */
-function playCard(code, playerId, card) {
+function playCard(code, playerId, card, declaredSuit) {
   const room = rooms.get(code);
   if (!room) return { error: 'Room not found' };
   if (room.phase !== 'playing') return { error: 'Game is not in progress' };
@@ -318,7 +319,8 @@ function playCard(code, playerId, card) {
   const cardIndex = hand.findIndex(c => c.suit === card.suit && c.rank === card.rank);
   if (cardIndex === -1) return { error: 'Card not in hand' };
 
-  const legal = legalPlays(hand, trick.ledSuit);
+  const trumpSuit = round.noTrump ? null : round.trumpCard?.suit ?? null;
+  const legal = legalPlays(hand, trick.ledSuit, trumpSuit, trick.jokerLed ?? false);
   if (!legal.some(c => c.suit === card.suit && c.rank === card.rank)) {
     return { error: 'Must follow suit if possible' };
   }
@@ -326,8 +328,21 @@ function playCard(code, playerId, card) {
   // Remove card from hand
   hand.splice(cardIndex, 1);
 
-  // Add to trick
-  if (trick.plays.length === 0) trick.ledSuit = card.suit;
+  // Add to trick — resolve led suit when leading with a joker
+  if (trick.plays.length === 0) {
+    if (card.suit === 'joker') {
+      if (round.noTrump) {
+        const VALID_SUITS = ['spades', 'hearts', 'diamonds', 'clubs'];
+        if (!VALID_SUITS.includes(declaredSuit)) return { error: 'Must declare a suit when leading a joker in no-trump' };
+        trick.ledSuit = declaredSuit;
+      } else {
+        trick.ledSuit = trumpSuit; // joker automatically leads trump
+      }
+      trick.jokerLed = true;
+    } else {
+      trick.ledSuit = card.suit;
+    }
+  }
   trick.plays.push({ playerIndex, card });
 
   let trickComplete = false;

@@ -16,6 +16,23 @@ export default function Card({ card, onClick, selected, disabled, faceDown }) {
   }
 
   const { suit, rank } = card;
+
+  if (suit === 'joker') {
+    const label = rank === 'big' ? 'BJ' : 'SJ';
+    return (
+      <button
+        className={`${styles.card} ${styles.joker} ${selected ? styles.selected : ''}`}
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={`${rank} joker`}
+      >
+        <span className={styles.corner}>{label}</span>
+        <span className={styles.suit}>🃏</span>
+        <span className={`${styles.corner} ${styles.bottom}`}>{label}</span>
+      </button>
+    );
+  }
+
   const isRed = RED_SUITS.has(suit);
 
   return (

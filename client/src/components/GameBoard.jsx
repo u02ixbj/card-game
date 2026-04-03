@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import WaitingRoom from './WaitingRoom';
 import BidPanel from './BidPanel';
 import TrickArea from './TrickArea';
@@ -43,10 +43,35 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
     const ledSuit = currentTrick.ledSuit;
     if (!ledSuit) return new Set(myHand.map(c => `${c.rank}-${c.suit}`));
 
-    const suited = myHand.filter(c => c.suit === ledSuit);
-    const playable = suited.length > 0 ? suited : myHand;
+    const trumpSuit = noTrump ? null : trumpCard?.suit ?? null;
+    const isTrumpLed = trumpSuit && ledSuit === trumpSuit;
+    const jokerWasLed = currentTrick.jokerLed ?? false;
+
+    let playable;
+    if (isTrumpLed) {
+      const trumpCards = myHand.filter(c => c.suit === 'joker' || c.suit === trumpSuit);
+      playable = trumpCards.length > 0 ? trumpCards : myHand;
+    } else if (jokerWasLed && !trumpSuit) {
+      const suitedCards = myHand.filter(c => c.suit === ledSuit);
+      const jokersInHand = myHand.filter(c => c.suit === 'joker');
+      playable = suitedCards.length > 0 ? [...suitedCards, ...jokersInHand] : myHand;
+    } else {
+      const suited = myHand.filter(c => c.suit === ledSuit);
+      playable = suited.length > 0 ? suited : myHand;
+    }
     return new Set(playable.map(c => `${c.rank}-${c.suit}`));
-  }, [roundPhase, currentTrick, myHand, myIndex, players.length]);
+  }, [roundPhase, currentTrick, myHand, myIndex, players.length, noTrump, trumpCard]);
+
+  const [pendingJoker, setPendingJoker] = useState(null);
+
+  function handlePlayCard(card) {
+    // No-trump joker lead requires declaring a suit
+    if (card.suit === 'joker' && noTrump && !currentTrick?.ledSuit) {
+      setPendingJoker(card);
+    } else {
+      actions.playCard(card);
+    }
+  }
 
   const isRoundOver = roundPhase === 'roundOver';
   const isLastRound = roundIndex >= roundSequence.length;
@@ -177,7 +202,7 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
         <div className={styles.handArea}>
           <Hand
             cards={myHand}
-            onPlay={actions.playCard}
+            onPlay={handlePlayCard}
             legalCards={legalCards}
           />
         </div>
@@ -187,6 +212,27 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
       <div className={styles.chatArea}>
         <Chat messages={messages} onSend={actions.sendMessage} />
       </div>
+
+      {/* Suit picker — shown when leading a joker in a no-trump round */}
+      {pendingJoker && (
+        <div className={styles.suitPickerOverlay}>
+          <div className={styles.suitPicker}>
+            <p>Declare a suit for your joker:</p>
+            <div className={styles.suitButtons}>
+              {Object.entries(SUIT_SYMBOLS).map(([suit, symbol]) => (
+                <button
+                  key={suit}
+                  className={styles.suitBtn}
+                  onClick={() => { actions.playCard(pendingJoker, suit); setPendingJoker(null); }}
+                >
+                  {symbol} {suit}
+                </button>
+              ))}
+            </div>
+            <button className={styles.cancelBtn} onClick={() => setPendingJoker(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

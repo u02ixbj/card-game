@@ -203,12 +203,12 @@ io.on('connection', (socket) => {
    * Play a card.
    * Payload: { card: { suit: string, rank: string } }
    */
-  socket.on('game:playCard', ({ card } = {}) => {
+  socket.on('game:playCard', ({ card, declaredSuit } = {}) => {
     const room = getRoomByPlayerId(socket.id);
     if (!room) return emitError(socket, 'Not in a room');
     if (!card?.suit || !card?.rank) return emitError(socket, 'Invalid card');
 
-    const result = playCard(room.code, socket.id, card);
+    const result = playCard(room.code, socket.id, card, declaredSuit);
     if (result.error) return emitError(socket, result.error);
 
     broadcastRoom(result.room);

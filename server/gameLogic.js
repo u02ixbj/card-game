@@ -16,12 +16,16 @@ const RANK_VALUES = Object.fromEntries(RANKS.map((r, i) => [r, i]));
  * Returns a fresh unshuffled 52-card deck.
  * Each card: { suit: string, rank: string }
  */
-function createDeck() {
+function createDeck(useJokers = false) {
   const deck = [];
   for (const suit of SUITS) {
     for (const rank of RANKS) {
       deck.push({ suit, rank });
     }
+  }
+  if (useJokers) {
+    deck.push({ suit: 'joker', rank: 'big' });
+    deck.push({ suit: 'joker', rank: 'small' });
   }
   return deck;
 }
@@ -51,8 +55,8 @@ function shuffleDeck(deck) {
  *   trumpCard   — the card flipped to determine trump (or null for no-trump)
  *   remaining   — leftover cards after dealing and flipping trump
  */
-function dealCards(numPlayers, cardsPerPlayer, noTrump = false) {
-  const deck = shuffleDeck(createDeck());
+function dealCards(numPlayers, cardsPerPlayer, noTrump = false, useJokers = false) {
+  const deck = shuffleDeck(createDeck(useJokers));
   const hands = Array.from({ length: numPlayers }, () => []);
 
   for (let i = 0; i < cardsPerPlayer * numPlayers; i++) {
@@ -183,6 +187,15 @@ function resolveTrick(trick, trumpSuit) {
  * Returns true if `challenger` beats `current` given trump and led suit.
  */
 function beats(challenger, current, trumpSuit, ledSuit) {
+  // Jokers outrank everything: big > small > all other cards
+  const jokerRank = r => (r === 'big' ? 2 : r === 'small' ? 1 : 0);
+  const challengerIsJoker = challenger.suit === 'joker';
+  const currentIsJoker = current.suit === 'joker';
+
+  if (challengerIsJoker && currentIsJoker) return jokerRank(challenger.rank) > jokerRank(current.rank);
+  if (challengerIsJoker) return true;
+  if (currentIsJoker) return false;
+
   const challengerIsTrump = trumpSuit && challenger.suit === trumpSuit;
   const currentIsTrump = trumpSuit && current.suit === trumpSuit;
 
@@ -195,12 +208,34 @@ function beats(challenger, current, trumpSuit, ledSuit) {
 }
 
 /**
- * Returns the cards from `hand` that are legal to play given the led suit.
- * If the player has any cards of the led suit they must play one.
- * Otherwise any card is legal.
+ * Returns the cards from `hand` that are legal to play.
+ *
+ * Joker rules:
+ *  - In trump rounds, jokers count as trump for following purposes.
+ *  - If a joker led in a no-trump round (jokerWasLed && !trumpSuit), the
+ *    other joker is never forced — follow the declared suit with a regular
+ *    card instead. The other joker is still an optional legal play.
  */
-function legalPlays(hand, ledSuit) {
-  if (!ledSuit) return hand; // player is leading
+function legalPlays(hand, ledSuit, trumpSuit = null, jokerWasLed = false) {
+  if (!ledSuit) return hand; // player is leading — anything goes
+
+  const isTrumpLed = trumpSuit && ledSuit === trumpSuit;
+
+  if (isTrumpLed) {
+    // Must play trump (regular trump cards or jokers)
+    const trumpCards = hand.filter(c => c.suit === 'joker' || c.suit === trumpSuit);
+    return trumpCards.length > 0 ? trumpCards : hand;
+  }
+
+  if (jokerWasLed && !trumpSuit) {
+    // No-trump joker lead: follow declared suit; other joker is optional, not forced
+    const suitedCards = hand.filter(c => c.suit === ledSuit);
+    const jokersInHand = hand.filter(c => c.suit === 'joker');
+    if (suitedCards.length > 0) return [...suitedCards, ...jokersInHand];
+    return hand; // no declared-suit cards — other joker not forced, play anything
+  }
+
+  // Normal: must follow led suit if possible (jokers are not led-suit cards)
   const suited = hand.filter(c => c.suit === ledSuit);
   return suited.length > 0 ? suited : hand;
 }

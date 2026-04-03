@@ -37,6 +37,10 @@
   color: #111;
 }
 
+.joker {
+  color: #6a0dad;
+}
+
 .faceDown {
   background: repeating-linear-gradient(
     45deg,

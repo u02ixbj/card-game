@@ -161,6 +161,19 @@ export default function WaitingRoom({ gameState, actions, error, messages }) {
               <span className={styles.readOnly}>{config.noTrumpRounds}</span>
             )}
           </div>
+
+          <div className={styles.configRow}>
+            <span>Use jokers</span>
+            {isHost ? (
+              <input
+                type="checkbox"
+                checked={config.useJokers ?? false}
+                onChange={e => actions.updateConfig({ useJokers: e.target.checked })}
+              />
+            ) : (
+              <span className={styles.readOnly}>{config.useJokers ? 'Yes' : 'No'}</span>
+            )}
+          </div>
         </div>
 
         {preview.length > 0 && (

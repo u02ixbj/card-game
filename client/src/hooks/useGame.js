@@ -153,8 +153,8 @@ export function useGame(socket) {
     socket?.emit('game:bid', { bid });
   }, [socket]);
 
-  const playCard = useCallback((card) => {
-    socket?.emit('game:playCard', { card });
+  const playCard = useCallback((card, declaredSuit) => {
+    socket?.emit('game:playCard', { card, declaredSuit });
   }, [socket]);
 
   const nextRound = useCallback(() => {
