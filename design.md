@@ -62,8 +62,9 @@ Standard 52-card deck. Card ranking within each suit (high to low):
 
 **Q:** Supported player count?
 
-> **A:** Variable --- 3 to 8 players. Designed primarily around 5
-> players.
+> **A:** Variable --- 2 to 8 players. Designed primarily around 5
+> players. (The server enforces a minimum of 2; the game plays best
+> with 3 or more.)
 
 **3.3 Round Structure**
 
@@ -120,9 +121,6 @@ Standard 52-card deck. Card ranking within each suit (high to low):
     tricks available (= cards dealt per player).
 
 -   Passing is not allowed --- every player must bid.
-
--   A bid may only be changed before the next player to the left has
-    bid.
 
 -   Bidding zero means the player\'s goal is to take no tricks at all.
 
@@ -193,9 +191,22 @@ bonus stacks on top of the flat 10 points.
 > **A:** Host creates a room and shares a 4-letter code. Other players
 > join by entering the code and their username.
 
+**Q:** Can the host manage players in the lobby?
+
+> **A:** Yes. The host can kick players before the game starts. The host
+> can also assign co-host status to other players; co-hosts can advance
+> the game to the next round (useful so the host doesn\'t have to be
+> present at every round transition).
+
+**Q:** What happens if a player refreshes the page?
+
+> **A:** Players can reconnect by re-entering the same room code and
+> username. Their position and hand are restored.
+
 **Q:** Play modes?
 
-> **A:** Online multiplayer (primary) and solo/group vs. AI opponents.
+> **A:** Online multiplayer only (AI opponents are planned for a future
+> update --- see section 6).
 
 **Q:** Player identity?
 
@@ -206,6 +217,9 @@ bonus stacks on top of the flat 10 points.
 
 These items were flagged during the design conversation to be added
 later:
+
+-   AI opponents --- solo/group vs. AI. Difficulty levels and bidding
+    strategy still to be decided.
 
 -   Joker wildcard rules --- discuss how jokers work in no-trump rounds
     and their power level
@@ -223,8 +237,4 @@ later:
 
 -   Round structure defaults for 3, 4, 6, 7, and 8 player counts.
 
--   AI opponent difficulty levels and bidding strategy.
-
 -   Whether to add a game history / statistics page.
-
--   Session persistence --- should games survive a page refresh?

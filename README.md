@@ -1,6 +1,6 @@
 # Bugger Bridge
 
-A trick-taking card game with online multiplayer. 3–8 players, bid exactly the tricks you'll take.
+A trick-taking card game with online multiplayer. 2–8 players, bid exactly the tricks you'll take.
 
 ## Running locally
 
