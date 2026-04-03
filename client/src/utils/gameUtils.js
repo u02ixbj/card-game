@@ -48,3 +48,15 @@ export function generateRoundSequence(numPlayers, peakCards = null, noTrumpRound
 export function autoPeak(numPlayers) {
   return Math.floor(52 / numPlayers);
 }
+
+const SUIT_ORDER = { clubs: 0, spades: 1, hearts: 2, diamonds: 3 };
+const RANK_VALUES = { '2':0,'3':1,'4':2,'5':3,'6':4,'7':5,'8':6,'9':7,'10':8,'J':9,'Q':10,'K':11,'A':12 };
+
+/** Sorts cards by suit (clubs → spades → hearts → diamonds), then rank high→low. */
+export function sortCards(cards) {
+  return [...cards].sort((a, b) => {
+    const suitDiff = SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
+    if (suitDiff !== 0) return suitDiff;
+    return RANK_VALUES[b.rank] - RANK_VALUES[a.rank];
+  });
+}

@@ -11,6 +11,7 @@ export function useGame(socket) {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
   const [trickWinner, setTrickWinner] = useState(null);
+  const [connectionEvent, setConnectionEvent] = useState(null);
   const reconnecting = useRef(false);
   const prevStateRef = useRef(null);
 
@@ -45,6 +46,18 @@ export function useGame(socket) {
         if (winnerIndex !== -1) {
           const winnerName = state.players[winnerIndex]?.username ?? `P${winnerIndex + 1}`;
           setTrickWinner(winnerName);
+        }
+      }
+
+      // Detect player connection changes
+      if (prev?.players) {
+        for (let i = 0; i < state.players.length; i++) {
+          const wasConnected = prev.players[i]?.connected;
+          const isConnected = state.players[i]?.connected;
+          if (wasConnected !== isConnected) {
+            setConnectionEvent({ username: state.players[i].username, connected: isConnected });
+            break;
+          }
         }
       }
 
@@ -106,6 +119,13 @@ export function useGame(socket) {
     return () => clearTimeout(timer);
   }, [trickWinner]);
 
+  // Auto-dismiss connection event after 3 seconds
+  useEffect(() => {
+    if (!connectionEvent) return;
+    const timer = setTimeout(() => setConnectionEvent(null), 3000);
+    return () => clearTimeout(timer);
+  }, [connectionEvent]);
+
   const createRoom = useCallback((username) => {
     socket?.emit('room:create', { username });
   }, [socket]);
@@ -151,6 +171,7 @@ export function useGame(socket) {
     gameState,
     error,
     trickWinner,
+    connectionEvent,
     actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame },
   };
 }

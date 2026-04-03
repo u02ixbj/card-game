@@ -187,8 +187,8 @@ export default function WaitingRoom({ gameState, actions, error }) {
           Start Game
         </button>
         {!isHost && <p className={styles.hint}>Waiting for host to start…</p>}
-        {isHost && players.filter(p => p.connected).length < 3 && (
-          <p className="error">Need at least 3 players</p>
+        {isHost && players.filter(p => p.connected).length < 2 && (
+          <p className="error">Need at least 2 players</p>
         )}
         {error && <p className="error">{error}</p>}
       </div>

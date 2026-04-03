@@ -72,6 +72,13 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.offline {
+  color: #e74c3c;
+  font-size: 0.6rem;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
 .pulse {
   display: inline-block;
   width: 8px;

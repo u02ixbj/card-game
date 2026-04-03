@@ -125,6 +125,31 @@
   100% { opacity: 0; }
 }
 
+.connectionBanner {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.4rem 1.1rem;
+  border-radius: 8px;
+  pointer-events: none;
+  animation: fadeInOut 3s ease forwards;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.disconnected {
+  background: rgba(231, 76, 60, 0.85);
+  color: #fff;
+}
+
+.reconnected {
+  background: rgba(39, 174, 96, 0.85);
+  color: #fff;
+}
+
 @media (max-width: 600px) {
   .board {
     grid-template-columns: 1fr;

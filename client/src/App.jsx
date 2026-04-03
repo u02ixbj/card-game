@@ -7,7 +7,7 @@ import GameOver from './components/GameOver';
 
 function AppInner() {
   const { socket } = useSocket();
-  const { gameState, error, trickWinner, actions } = useGame(socket);
+  const { gameState, error, trickWinner, connectionEvent, actions } = useGame(socket);
 
   if (!gameState) {
     return <Lobby onCreate={actions.createRoom} onJoin={actions.joinRoom} error={error} />;
@@ -22,6 +22,7 @@ function AppInner() {
       gameState={gameState}
       error={error}
       trickWinner={trickWinner}
+      connectionEvent={connectionEvent}
       actions={actions}
     />
   );

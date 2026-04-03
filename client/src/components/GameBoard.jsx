@@ -8,7 +8,7 @@ import styles from './GameBoard.module.css';
 
 const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
-export default function GameBoard({ gameState, error, trickWinner, actions }) {
+export default function GameBoard({ gameState, error, trickWinner, connectionEvent, actions }) {
   const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex, cohosts, myIndex: myTopIndex } = gameState;
 
   // Still in lobby
@@ -151,6 +151,14 @@ export default function GameBoard({ gameState, error, trickWinner, actions }) {
         {trickWinner && (
           <div className={styles.trickAnnouncement}>
             {trickWinner} wins the trick!
+          </div>
+        )}
+
+        {connectionEvent && (
+          <div className={`${styles.connectionBanner} ${connectionEvent.connected ? styles.reconnected : styles.disconnected}`}>
+            {connectionEvent.connected
+              ? `${connectionEvent.username} reconnected`
+              : `${connectionEvent.username} disconnected`}
           </div>
         )}
 

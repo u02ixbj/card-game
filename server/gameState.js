@@ -185,7 +185,7 @@ function startGame(code, hostId) {
   if (!room) return { error: 'Room not found' };
   if (room.hostId !== hostId) return { error: 'Only the host can start the game' };
   if (room.phase !== 'lobby') return { error: 'Game already started' };
-  if (room.players.length < 3) return { error: 'Need at least 3 players to start' };
+  if (room.players.length < 2) return { error: 'Need at least 2 players to start' };
 
   const numPlayers = room.players.length;
   const { peakCards, noTrumpRounds, minCards } = room.config;

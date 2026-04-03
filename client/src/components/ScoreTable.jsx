@@ -21,6 +21,7 @@ export default function ScoreTable({ players, scores, bids, tricksTaken, activeP
             <tr key={i} className={rowClass}>
               <td>
                 {isActive && <span className={styles.pulse} aria-hidden="true" />}
+                {!p.connected && <span className={styles.offline} title="Disconnected">●</span>}
                 {p.username}
               </td>
               {bids && <td>{bids[i] ?? '—'}</td>}

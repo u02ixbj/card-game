@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Card from './Card';
 import styles from './Hand.module.css';
+import { sortCards } from '../utils/gameUtils';
 
 /**
  * Renders the current player's hand.
@@ -23,7 +24,7 @@ export default function Hand({ cards, onPlay, legalCards }) {
 
   return (
     <div className={styles.hand}>
-      {cards.map((card) => {
+      {sortCards(cards).map((card) => {
         const key = `${card.rank}-${card.suit}`;
         const isLegal = legalCards ? legalCards.has(key) : false;
         return (

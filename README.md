@@ -12,7 +12,7 @@ cd server && npm run dev
 cd client && npm run dev
 ```
 
-Open `http://localhost:3000`. You need at least 3 browser tabs to start a game.
+Open `http://localhost:3000`. You need at least 2 browser tabs to start a game.
 
 ## Local network (same Wi-Fi)
 
