@@ -208,6 +208,7 @@ export default function WaitingRoom({ gameState, actions, error, messages }) {
           <p className="error">Need at least 2 players</p>
         )}
         {error && <p className="error">{error}</p>}
+        <p style={{ fontSize: '0.7rem', opacity: 0.3, marginTop: '1rem' }}>v1.1</p>
       </div>
     </div>
   );
