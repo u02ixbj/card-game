@@ -8,7 +8,7 @@ import styles from './GameBoard.module.css';
 
 const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
-export default function GameBoard({ gameState, error, actions }) {
+export default function GameBoard({ gameState, error, trickWinner, actions }) {
   const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex, cohosts, myIndex: myTopIndex } = gameState;
 
   // Still in lobby
@@ -107,15 +107,50 @@ export default function GameBoard({ gameState, error, actions }) {
         {isRoundOver && (
           <div className={styles.roundOver}>
             <h2>Round over!</h2>
+            <table className={styles.summary}>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Bid</th>
+                  <th>Took</th>
+                  <th>Result</th>
+                  <th>+Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {players.map((p, i) => {
+                  const bid = bids[i] ?? 0;
+                  const took = tricksTaken[i];
+                  const hit = bid === took;
+                  const pts = hit ? 10 + (bid * (bid + 1)) / 2 : 0;
+                  const diff = took - bid;
+                  return (
+                    <tr key={i} className={hit ? styles.summaryHit : styles.summaryMiss}>
+                      <td>{p.username}</td>
+                      <td>{bid}</td>
+                      <td>{took}</td>
+                      <td>{hit ? '✓' : `${diff > 0 ? '+' : ''}${diff}`}</td>
+                      <td>{pts > 0 ? `+${pts}` : '0'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
             {canAdvance ? (
               <button className="btn-primary" onClick={actions.nextRound}>
                 {isLastRound ? 'See final scores' : 'Next round'}
               </button>
             ) : (
-              <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>
                 Waiting for host to advance…
               </p>
             )}
+          </div>
+        )}
+
+        {trickWinner && (
+          <div className={styles.trickAnnouncement}>
+            {trickWinner} wins the trick!
           </div>
         )}
 

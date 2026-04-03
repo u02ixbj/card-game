@@ -10,7 +10,9 @@ const storage = sessionStorage; // tab-scoped: survives refresh, doesn't bleed t
 export function useGame(socket) {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
+  const [trickWinner, setTrickWinner] = useState(null);
   const reconnecting = useRef(false);
+  const prevStateRef = useRef(null);
 
   useEffect(() => {
     if (!socket) return;
@@ -29,6 +31,24 @@ export function useGame(socket) {
 
     function handleState(state) {
       reconnecting.current = false;
+
+      // Detect trick completion and announce the winner
+      const prev = prevStateRef.current;
+      if (
+        prev?.round &&
+        state.round &&
+        state.round.completedTricks > prev.round.completedTricks
+      ) {
+        const winnerIndex = state.round.tricksTaken.findIndex(
+          (t, i) => t > (prev.round.tricksTaken[i] ?? 0)
+        );
+        if (winnerIndex !== -1) {
+          const winnerName = state.players[winnerIndex]?.username ?? `P${winnerIndex + 1}`;
+          setTrickWinner(winnerName);
+        }
+      }
+
+      prevStateRef.current = state;
       setGameState(state);
       setError(null);
 
@@ -79,6 +99,13 @@ export function useGame(socket) {
     return () => clearTimeout(timer);
   }, [error]);
 
+  // Auto-dismiss trick winner announcement after 2 seconds
+  useEffect(() => {
+    if (!trickWinner) return;
+    const timer = setTimeout(() => setTrickWinner(null), 2000);
+    return () => clearTimeout(timer);
+  }, [trickWinner]);
+
   const createRoom = useCallback((username) => {
     socket?.emit('room:create', { username });
   }, [socket]);
@@ -123,6 +150,7 @@ export function useGame(socket) {
   return {
     gameState,
     error,
+    trickWinner,
     actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame },
   };
 }

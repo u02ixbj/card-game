@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 240px 1fr;
   grid-template-areas:
     "header header"
     "scores main"
@@ -64,10 +64,65 @@
   font-size: 1.5rem;
 }
 
+.summary {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: #fff;
+  width: 100%;
+  max-width: 360px;
+}
+
+.summary th {
+  text-align: left;
+  padding: 0.3rem 0.75rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.summary td {
+  padding: 0.35rem 0.75rem;
+}
+
+.summaryHit td {
+  color: #6fcf97;
+  font-weight: 600;
+}
+
+.summaryMiss td {
+  color: rgba(255,255,255,0.7);
+}
+
 .error {
   background: rgba(255,255,255,0.9);
   padding: 0.5rem 1rem;
   border-radius: 6px;
+}
+
+.trickAnnouncement {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: #f0c040;
+  font-size: 1.4rem;
+  font-weight: 700;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  pointer-events: none;
+  animation: fadeInOut 2s ease forwards;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.85); }
+  15%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @media (max-width: 600px) {
