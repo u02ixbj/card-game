@@ -73,10 +73,27 @@
 @media (max-width: 600px) {
   .board {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto auto;
     grid-template-areas:
       "header"
       "main"
-      "scores"
-      "hand";
+      "hand"
+      "scores";
+  }
+
+  .header {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .main {
+    padding: 0.75rem;
+  }
+
+  .scores {
+    padding: 0.5rem 0.75rem;
+    background: rgba(0,0,0,0.2);
+    overflow-x: auto;
+    overflow-y: visible;
   }
 }

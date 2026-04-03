@@ -68,3 +68,20 @@
 .suit {
   font-size: 1.5rem;
 }
+
+@media (max-width: 600px) {
+  .card {
+    width: 48px;
+    height: 72px;
+  }
+
+  .corner {
+    font-size: 0.7rem;
+    top: 3px;
+    left: 5px;
+  }
+
+  .suit {
+    font-size: 1.1rem;
+  }
+}

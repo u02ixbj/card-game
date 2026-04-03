@@ -75,6 +75,13 @@ export default function GameBoard({ gameState, error, actions }) {
           scores={scores}
           bids={bids}
           tricksTaken={tricksTaken}
+          activePlayerIndex={
+            roundPhase === 'bidding'
+              ? bidOrder[currentBidderIndex]
+              : roundPhase === 'playing' && currentTrick
+                ? (currentTrick.leaderIndex + currentTrick.plays.length) % players.length
+                : null
+          }
         />
       </div>
 

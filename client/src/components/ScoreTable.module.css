@@ -27,3 +27,63 @@
   color: #6fcf97;
   font-weight: 700;
 }
+
+@media (max-width: 600px) {
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+  }
+
+  .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    min-width: 52px;
+    font-size: 0.78rem;
+  }
+
+  .table tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.07);
+  }
+
+  .table td {
+    padding: 0.05rem 0;
+  }
+
+  .table td:first-child {
+    font-weight: 600;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 64px;
+  }
+}
+
+.active td {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f0c040;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
