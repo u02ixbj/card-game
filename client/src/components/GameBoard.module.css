@@ -2,11 +2,11 @@
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px 1fr 220px;
   grid-template-areas:
-    "header header"
-    "scores main"
-    "scores hand";
+    "header header header"
+    "scores main chat"
+    "scores hand chat";
   gap: 0;
 }
 
@@ -29,6 +29,29 @@
   color: #f0c040;
 }
 
+.trumpInner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trumpCardWrap {
+  display: inline-block;
+  width: 32px;
+  height: 48px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.trumpCardWrap > button {
+  transform: scale(0.5);
+  transform-origin: top left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
 .scores {
   grid-area: scores;
   padding: 1rem;
@@ -49,6 +72,11 @@
 .handArea {
   grid-area: hand;
   padding-bottom: 1rem;
+}
+
+.chatArea {
+  grid-area: chat;
+  overflow: hidden;
 }
 
 .roundOver {
@@ -153,12 +181,17 @@
 @media (max-width: 600px) {
   .board {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto auto auto;
     grid-template-areas:
       "header"
       "main"
       "hand"
+      "chat"
       "scores";
+  }
+
+  .chatArea {
+    max-height: 200px;
   }
 
   .header {

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { generateRoundSequence, autoPeak } from '../utils/gameUtils';
+import Chat from './Chat';
 import styles from './WaitingRoom.module.css';
 
-export default function WaitingRoom({ gameState, actions, error }) {
+export default function WaitingRoom({ gameState, actions, error, messages }) {
   const { code, players, config, myIndex, cohosts } = gameState;
   const isHost = myIndex === 0;
 
@@ -53,6 +54,9 @@ export default function WaitingRoom({ gameState, actions, error }) {
 
   return (
     <div className={styles.wrapper}>
+      <div className={styles.chatPanel}>
+        <Chat messages={messages} onSend={actions.sendMessage} />
+      </div>
       <div className={styles.card}>
         <h2>Room <span className={styles.code}>{code}</span></h2>
         <p className={styles.hint}>Share this code with other players</p>
@@ -182,7 +186,7 @@ export default function WaitingRoom({ gameState, actions, error }) {
         <button
           className="btn-primary"
           onClick={actions.startGame}
-          disabled={!isHost || players.filter(p => p.connected).length < 3}
+          disabled={!isHost || players.filter(p => p.connected).length < 2}
         >
           Start Game
         </button>

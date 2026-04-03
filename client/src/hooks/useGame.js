@@ -12,6 +12,7 @@ export function useGame(socket) {
   const [error, setError] = useState(null);
   const [trickWinner, setTrickWinner] = useState(null);
   const [connectionEvent, setConnectionEvent] = useState(null);
+  const [messages, setMessages] = useState([]);
   const reconnecting = useRef(false);
   const prevStateRef = useRef(null);
 
@@ -89,10 +90,15 @@ export function useGame(socket) {
       setError('You were removed from the room.');
     }
 
+    function handleChatMessage(msg) {
+      setMessages(prev => [...prev, msg]);
+    }
+
     socket.on('connect', handleConnect);
     socket.on('game:state', handleState);
     socket.on('error', handleError);
     socket.on('kicked', handleKicked);
+    socket.on('chat:message', handleChatMessage);
 
     // If socket is already connected (e.g. effect ran after connect fired), try now
     if (socket.connected) handleConnect();
@@ -102,6 +108,7 @@ export function useGame(socket) {
       socket.off('game:state', handleState);
       socket.off('error', handleError);
       socket.off('kicked', handleKicked);
+      socket.off('chat:message', handleChatMessage);
     };
   }, [socket]);
 
@@ -167,11 +174,16 @@ export function useGame(socket) {
     setGameState(null);
   }, []);
 
+  const sendMessage = useCallback((text) => {
+    socket?.emit('chat:message', { text });
+  }, [socket]);
+
   return {
     gameState,
     error,
     trickWinner,
     connectionEvent,
-    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame },
+    messages,
+    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame, sendMessage },
   };
 }

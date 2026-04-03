@@ -4,16 +4,18 @@ import BidPanel from './BidPanel';
 import TrickArea from './TrickArea';
 import Hand from './Hand';
 import ScoreTable from './ScoreTable';
+import Card from './Card';
+import Chat from './Chat';
 import styles from './GameBoard.module.css';
 
 const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
 
-export default function GameBoard({ gameState, error, trickWinner, connectionEvent, actions }) {
+export default function GameBoard({ gameState, error, trickWinner, connectionEvent, messages, actions }) {
   const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex, cohosts, myIndex: myTopIndex } = gameState;
 
   // Still in lobby
   if (phase === 'lobby') {
-    return <WaitingRoom gameState={gameState} actions={actions} error={error} />;
+    return <WaitingRoom gameState={gameState} actions={actions} error={error} messages={messages} />;
   }
 
   const { myHand, myIndex, bids, tricksTaken, trumpCard, noTrump, cardsPerPlayer,
@@ -60,11 +62,16 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
           {' '}({cardsPerPlayer} cards)
         </span>
         <span className={styles.trump}>
-          {noTrump
-            ? 'No Trump'
-            : trumpCard
-              ? `Trump: ${SUIT_SYMBOLS[trumpCard.suit]} ${trumpCard.suit}`
-              : ''}
+          {noTrump ? (
+            'No Trump'
+          ) : trumpCard ? (
+            <span className={styles.trumpInner}>
+              Trump:
+              <span className={styles.trumpCardWrap}>
+                <Card card={trumpCard} disabled />
+              </span>
+            </span>
+          ) : null}
         </span>
       </div>
 
@@ -175,6 +182,11 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
           />
         </div>
       )}
+
+      {/* Chat */}
+      <div className={styles.chatArea}>
+        <Chat messages={messages} onSend={actions.sendMessage} />
+      </div>
     </div>
   );
 }

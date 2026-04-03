@@ -242,6 +242,20 @@ io.on('connection', (socket) => {
     broadcastRoom(result.room);
   });
 
+  // --- Chat ---
+
+  socket.on('chat:message', ({ text } = {}) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return;
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player || !text?.trim()) return;
+
+    io.to(room.code).emit('chat:message', {
+      username: player.username,
+      text: text.trim().slice(0, 200),
+    });
+  });
+
   // --- Disconnect ---
 
   socket.on('disconnect', () => {
