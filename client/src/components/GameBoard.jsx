@@ -108,6 +108,7 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
           scores={scores}
           bids={bids}
           tricksTaken={tricksTaken}
+          dealerIndex={dealerIndex}
           activePlayerIndex={
             roundPhase === 'bidding'
               ? bidOrder[currentBidderIndex]
@@ -134,6 +135,7 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
             trick={currentTrick}
             players={players}
             myIndex={myIndex}
+            dealerIndex={dealerIndex}
           />
         )}
 

@@ -72,6 +72,22 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.dealer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #f0c040;
+  color: #1a1a1a;
+  font-size: 0.6rem;
+  font-weight: 800;
+  margin-right: 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 .offline {
   color: #e74c3c;
   font-size: 0.6rem;

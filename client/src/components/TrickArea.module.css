@@ -19,6 +19,23 @@
 .name {
   color: #e0e0e0;
   font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.dealer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #f0c040;
+  color: #1a1a1a;
+  font-size: 0.6rem;
+  font-weight: 800;
+  flex-shrink: 0;
 }
 
 .empty {

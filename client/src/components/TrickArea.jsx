@@ -7,7 +7,7 @@ import styles from './TrickArea.module.css';
  * Renders a slot for every player in turn order, with an empty
  * placeholder for players who haven't played yet.
  */
-export default function TrickArea({ trick, players, myIndex }) {
+export default function TrickArea({ trick, players, myIndex, dealerIndex }) {
   if (!trick) {
     return <div className={styles.empty}>Waiting for first card…</div>;
   }
@@ -35,6 +35,7 @@ export default function TrickArea({ trick, players, myIndex }) {
             </div>
           )}
           <span className={styles.name}>
+            {playerIndex === dealerIndex && <span className={styles.dealer} title="Dealer">D</span>}
             {players[playerIndex]?.username ?? `P${playerIndex + 1}`}
             {playerIndex === myIndex ? ' (you)' : ''}
           </span>

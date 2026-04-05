@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ScoreTable.module.css';
 
-export default function ScoreTable({ players, scores, bids, tricksTaken, activePlayerIndex }) {
+export default function ScoreTable({ players, scores, bids, tricksTaken, dealerIndex, activePlayerIndex }) {
   return (
     <table className={styles.table}>
       <thead>
@@ -20,6 +20,7 @@ export default function ScoreTable({ players, scores, bids, tricksTaken, activeP
           return (
             <tr key={i} className={rowClass}>
               <td>
+                {dealerIndex === i && <span className={styles.dealer} title="Dealer">D</span>}
                 {isActive && <span className={styles.pulse} aria-hidden="true" />}
                 {!p.connected && <span className={styles.offline} title="Disconnected">●</span>}
                 {p.username}
