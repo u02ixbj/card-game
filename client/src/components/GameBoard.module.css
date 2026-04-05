@@ -160,7 +160,7 @@
   padding: 0.6rem 1.5rem;
   border-radius: 10px;
   pointer-events: none;
-  animation: fadeInOut 2s ease forwards;
+  animation: fadeInOut 4s ease forwards;
   z-index: 100;
   text-align: center;
 }

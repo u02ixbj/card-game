@@ -130,10 +130,10 @@ export function useGame(socket) {
     return () => clearTimeout(timer);
   }, [error]);
 
-  // Auto-dismiss trick winner announcement after 2 seconds
+  // Auto-dismiss trick winner announcement after 4 seconds
   useEffect(() => {
     if (!trickWinner) return;
-    const timer = setTimeout(() => setTrickWinner(null), 2000);
+    const timer = setTimeout(() => setTrickWinner(null), 4000);
     return () => clearTimeout(timer);
   }, [trickWinner]);
 
