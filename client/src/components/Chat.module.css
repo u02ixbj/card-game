@@ -86,3 +86,13 @@
   opacity: 0.4;
   cursor: default;
 }
+
+@media (max-width: 600px) {
+  .form {
+    flex-direction: column;
+  }
+
+  .sendBtn {
+    width: 100%;
+  }
+}
