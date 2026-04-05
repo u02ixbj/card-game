@@ -32,24 +32,43 @@
 .trumpInner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
-.trumpCardWrap {
-  display: inline-block;
-  width: 32px;
-  height: 48px;
-  position: relative;
-  flex-shrink: 0;
+.trumpLabel {
+  color: #f0c040;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.trumpCardWrap > button {
-  transform: scale(0.5);
-  transform-origin: top left;
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
+.trumpBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fefdf8;
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  font-family: Georgia, serif;
+  line-height: 1.1;
+  min-width: 42px;
+}
+
+.trumpBadgeRank {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.trumpBadgeSuit {
+  font-size: 1.35rem;
+}
+
+.trumpBadgeRed {
+  color: #e8181a;
+}
+
+.trumpBadgeBlack {
+  color: #111;
 }
 
 .scores {

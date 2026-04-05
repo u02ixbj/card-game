@@ -4,11 +4,11 @@ import BidPanel from './BidPanel';
 import TrickArea from './TrickArea';
 import Hand from './Hand';
 import ScoreTable from './ScoreTable';
-import Card from './Card';
 import Chat from './Chat';
 import styles from './GameBoard.module.css';
 
 const SUIT_SYMBOLS = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' };
+const RED_SUITS = new Set(['hearts', 'diamonds']);
 
 export default function GameBoard({ gameState, error, trickWinner, connectionEvent, messages, actions }) {
   const { phase, players, scores, round, roundIndex, roundSequence, dealerIndex, cohosts, myIndex: myTopIndex } = gameState;
@@ -91,9 +91,10 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
             'No Trump'
           ) : trumpCard ? (
             <span className={styles.trumpInner}>
-              Trump:
-              <span className={styles.trumpCardWrap}>
-                <Card card={trumpCard} disabled />
+              <span className={styles.trumpLabel}>Trump</span>
+              <span className={`${styles.trumpBadge} ${RED_SUITS.has(trumpCard.suit) ? styles.trumpBadgeRed : styles.trumpBadgeBlack}`}>
+                <span className={styles.trumpBadgeRank}>{trumpCard.rank}</span>
+                <span className={styles.trumpBadgeSuit}>{SUIT_SYMBOLS[trumpCard.suit]}</span>
               </span>
             </span>
           ) : null}
