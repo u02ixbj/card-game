@@ -74,6 +74,20 @@
 }
 
 @media (max-width: 600px) {
+  .area {
+    padding: 0.5rem;
+    gap: 0.5rem;
+    min-height: 70px;
+  }
+
+  .play {
+    gap: 0.15rem;
+  }
+
+  .name {
+    font-size: 0.65rem;
+  }
+
   .placeholder {
     width: 48px;
     height: 72px;
