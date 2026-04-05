@@ -92,6 +92,10 @@
     flex-direction: column;
   }
 
+  .input {
+    font-size: 1rem; /* 16px — prevents iOS Safari from auto-zooming on focus */
+  }
+
   .sendBtn {
     width: 100%;
   }
