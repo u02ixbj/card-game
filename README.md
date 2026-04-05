@@ -53,7 +53,7 @@ Open `http://localhost:3000`. You need at least 2 browser tabs to start a game.
 
 ### Re-deploying
 
-- **Vercel** auto-deploys on push to `main`. After changing env vars, manually redeploy with build cache cleared.
+- **Vercel** does not reliably auto-deploy from GitHub. Deploy manually from the `client` folder: `vercel --prod --yes`
 - **Railway** auto-deploys on push to `main`.
 
 ## Tech stack

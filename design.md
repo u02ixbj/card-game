@@ -213,16 +213,33 @@ bonus stacks on top of the flat 10 points.
 > **A:** Username only for now. Avatar support is on the reminder list
 > for a future update.
 
-**6. Future Features & Reminders**
+**6. Features Added Since Launch**
 
-These items were flagged during the design conversation to be added
-later:
+-   Joker wildcards ✓ --- Big Joker and Small Joker added as an
+    optional game setting. Big Joker beats all; leading a joker in
+    no-trump requires declaring a suit.
+
+-   Chat box ✓ --- In-game chat panel visible throughout the game.
+
+-   Dealer token ✓ --- Gold "D" chip shown next to the dealer's name
+    in both the scoreboard and the trick area.
+
+-   Trick summary announcement ✓ --- After each trick a 4-second
+    overlay shows who won, which card won, and why (trump or highest
+    of led suit).
+
+-   Trump badge ✓ --- Trump suit displayed as a readable card-shaped
+    badge in the header instead of a scaled-down card image.
+
+-   Mobile layout ✓ --- Responsive layout for small screens; cards,
+    chat, and scoreboard all fit without clipping.
+
+**7. Future Features & Reminders**
+
+These items are still to be added:
 
 -   AI opponents --- solo/group vs. AI. Difficulty levels and bidding
     strategy still to be decided.
-
--   Joker wildcard rules --- discuss how jokers work in no-trump rounds
-    and their power level
 
 -   Player avatars --- add avatar selection to the player
     identity/profile system
@@ -233,7 +250,7 @@ later:
 -   Round structure configurator --- UI for host to set card sequence
     and no-trump round positions
 
-**7. Open Questions / Still To Decide**
+**8. Open Questions / Still To Decide**
 
 -   Round structure defaults for 3, 4, 6, 7, and 8 player counts.
 
