@@ -2,8 +2,8 @@
   width: 64px;
   height: 96px;
   border-radius: 8px;
-  background: var(--card-bg);
-  box-shadow: var(--card-shadow);
+  background: #fefdf8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.15);
   border: 2px solid transparent;
   display: flex;
   flex-direction: column;
@@ -11,12 +11,22 @@
   justify-content: center;
   position: relative;
   font-family: Georgia, serif;
-  transition: transform 0.15s, border-color 0.15s;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.08);
+  pointer-events: none;
 }
 
 .card:not(:disabled):hover {
   transform: translateY(-8px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .card:disabled {
@@ -56,9 +66,19 @@
   position: absolute;
   top: 5px;
   left: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.cornerRank {
   font-size: 0.85rem;
   font-weight: 700;
-  line-height: 1;
+}
+
+.cornerSuit {
+  font-size: 0.6rem;
 }
 
 .bottom {
@@ -75,17 +95,24 @@
 
 @media (max-width: 600px) {
   .card {
-    width: 48px;
-    height: 72px;
+    width: 56px;
+    height: 84px;
   }
 
   .corner {
-    font-size: 0.7rem;
     top: 3px;
     left: 5px;
   }
 
+  .cornerRank {
+    font-size: 0.95rem;
+  }
+
+  .cornerSuit {
+    font-size: 0.65rem;
+  }
+
   .suit {
-    font-size: 1.1rem;
+    font-size: 1.6rem;
   }
 }

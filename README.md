@@ -35,7 +35,7 @@ Open `http://localhost:3000`. You need at least 2 browser tabs to start a game.
 
 ## Local network (same Wi-Fi)
 
-1. Find your IP: run `ipconfig` and look for **IPv4 Address** (e.g. `192.168.1.50`)
+1. Find your IP: run `hostname -I` and use the first address shown (e.g. `192.168.1.50`)
 2. In `client/vite.config.js` add `host: true` to the `server` block
 3. Other devices on the network open `http://192.168.1.50:3000`
 

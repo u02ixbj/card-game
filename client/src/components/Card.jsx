@@ -42,9 +42,15 @@ export default function Card({ card, onClick, selected, disabled, faceDown }) {
       disabled={disabled}
       aria-label={`${rank} of ${suit}`}
     >
-      <span className={styles.corner}>{rank}</span>
+      <span className={styles.corner}>
+        <span className={styles.cornerRank}>{rank}</span>
+        <span className={styles.cornerSuit}>{SUIT_SYMBOLS[suit]}</span>
+      </span>
       <span className={styles.suit}>{SUIT_SYMBOLS[suit]}</span>
-      <span className={`${styles.corner} ${styles.bottom}`}>{rank}</span>
+      <span className={`${styles.corner} ${styles.bottom}`}>
+        <span className={styles.cornerRank}>{rank}</span>
+        <span className={styles.cornerSuit}>{SUIT_SYMBOLS[suit]}</span>
+      </span>
     </button>
   );
 }

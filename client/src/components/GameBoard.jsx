@@ -182,7 +182,13 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
 
         {trickWinner && (
           <div className={styles.trickAnnouncement}>
-            {trickWinner} wins the trick!
+            <div>{trickWinner.winnerName} wins the trick!</div>
+            {trickWinner.card && (
+              <div className={styles.trickDetail}>
+                {trickWinner.card.rank}{SUIT_SYMBOLS[trickWinner.card.suit]}
+                {trickWinner.reason ? ` — ${trickWinner.reason}` : ''}
+              </div>
+            )}
           </div>
         )}
 

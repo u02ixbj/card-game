@@ -503,6 +503,7 @@ function getPublicState(code, playerId) {
       bidOrder: r.bidOrder,
       currentTrick: r.currentTrick,
       completedTricks: r.tricks.length,
+      lastCompletedTrick: r.tricks.length > 0 ? r.tricks[r.tricks.length - 1] : null,
       // Only send the requesting player's hand
       myHand: playerIndex >= 0 ? r.hands[playerIndex] : [],
       myIndex: playerIndex,

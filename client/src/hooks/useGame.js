@@ -46,7 +46,18 @@ export function useGame(socket) {
         );
         if (winnerIndex !== -1) {
           const winnerName = state.players[winnerIndex]?.username ?? `P${winnerIndex + 1}`;
-          setTrickWinner(winnerName);
+          const lastTrick = state.round.lastCompletedTrick;
+          const winnerPlay = lastTrick?.plays.find(p => p.playerIndex === winnerIndex);
+          const trumpSuit = state.round.noTrump ? null : state.round.trumpCard?.suit;
+          let reason = null;
+          if (winnerPlay) {
+            if (trumpSuit && winnerPlay.card.suit === trumpSuit && lastTrick.ledSuit !== trumpSuit) {
+              reason = 'trump';
+            } else {
+              reason = `highest ${lastTrick.ledSuit}`;
+            }
+          }
+          setTrickWinner({ winnerName, card: winnerPlay?.card ?? null, reason });
         }
       }
 
