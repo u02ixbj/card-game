@@ -88,19 +88,21 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
           Round {Math.min(roundIndex + 1, totalRounds)} / {totalRounds}
           {' '}({cardsPerPlayer} cards)
         </span>
-        <span className={styles.trump}>
-          {noTrump ? (
-            'No Trump'
-          ) : trumpCard ? (
-            <span className={styles.trumpInner}>
-              <span className={styles.trumpLabel}>Trump</span>
-              <span className={`${styles.trumpBadge} ${RED_SUITS.has(trumpCard.suit) ? styles.trumpBadgeRed : styles.trumpBadgeBlack}`}>
-                <span className={styles.trumpBadgeRank}>{trumpCard.rank}</span>
-                <span className={styles.trumpBadgeSuit}>{SUIT_SYMBOLS[trumpCard.suit]}</span>
+        {roundPhase !== 'bidding' && (
+          <span className={styles.trump}>
+            {noTrump ? (
+              'No Trump'
+            ) : trumpCard ? (
+              <span className={styles.trumpInner}>
+                <span className={styles.trumpLabel}>Trump</span>
+                <span className={`${styles.trumpBadge} ${RED_SUITS.has(trumpCard.suit) ? styles.trumpBadgeRed : styles.trumpBadgeBlack}`}>
+                  <span className={styles.trumpBadgeRank}>{trumpCard.rank}</span>
+                  <span className={styles.trumpBadgeSuit}>{SUIT_SYMBOLS[trumpCard.suit]}</span>
+                </span>
               </span>
-            </span>
-          ) : null}
-        </span>
+            ) : null}
+          </span>
+        )}
       </div>
 
       {/* Score sidebar */}
@@ -124,12 +126,25 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
       {/* Main play area */}
       <div className={styles.main}>
         {roundPhase === 'bidding' && (
-          <BidPanel
-            tricksAvailable={cardsPerPlayer}
-            forbiddenBid={forbiddenBid}
-            isMyTurn={isMyBidTurn}
-            onBid={actions.placeBid}
-          />
+          <>
+            <div className={styles.featuredTrump}>
+              <span className={styles.featuredTrumpLabel}>Trump</span>
+              {noTrump ? (
+                <div className={styles.featuredNT}>No Trump</div>
+              ) : trumpCard ? (
+                <div className={`${styles.featuredCard} ${RED_SUITS.has(trumpCard.suit) ? styles.featuredCardRed : styles.featuredCardBlack}`}>
+                  <span className={styles.featuredRank}>{trumpCard.rank}</span>
+                  <span className={styles.featuredSuit}>{SUIT_SYMBOLS[trumpCard.suit]}</span>
+                </div>
+              ) : null}
+            </div>
+            <BidPanel
+              tricksAvailable={cardsPerPlayer}
+              forbiddenBid={forbiddenBid}
+              isMyTurn={isMyBidTurn}
+              onBid={actions.placeBid}
+            />
+          </>
         )}
 
         {(roundPhase === 'playing' || roundPhase === 'roundOver') && (
