@@ -144,8 +144,8 @@ export function useGame(socket) {
     return () => clearTimeout(timer);
   }, [connectionEvent]);
 
-  const createRoom = useCallback((username) => {
-    socket?.emit('room:create', { username });
+  const createRoom = useCallback((username, gameType = 'bugger-bridge') => {
+    socket?.emit('room:create', { username, gameType });
   }, [socket]);
 
   const joinRoom = useCallback((code, username) => {

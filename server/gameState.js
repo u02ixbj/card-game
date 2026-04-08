@@ -53,10 +53,11 @@ function generateRoomCode() {
  *   game: GameState | null,
  * }
  */
-function createRoom(hostId, hostUsername) {
+function createRoom(hostId, hostUsername, gameType = 'bugger-bridge') {
   const code = generateRoomCode();
   const room = {
     code,
+    gameType,
     phase: 'lobby',
     players: [{ id: hostId, username: hostUsername, connected: true }],
     hostId,
@@ -477,6 +478,7 @@ function getPublicState(code, playerId) {
 
   const publicRoom = {
     code: room.code,
+    gameType: room.gameType ?? 'bugger-bridge',
     phase: room.phase,
     players: room.players.map(p => ({ username: p.username, connected: p.connected })),
     hostId: room.hostId,

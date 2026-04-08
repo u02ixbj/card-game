@@ -80,12 +80,13 @@ io.on('connection', (socket) => {
    * Payload: { username: string }
    * Response: game:state (full state) emitted to creator
    */
-  socket.on('room:create', ({ username } = {}) => {
+  socket.on('room:create', ({ username, gameType } = {}) => {
     if (!username?.trim()) return emitError(socket, 'Username is required');
+    const type = ['bugger-bridge', '31'].includes(gameType) ? gameType : 'bugger-bridge';
 
-    const room = createRoom(socket.id, username.trim());
+    const room = createRoom(socket.id, username.trim(), type);
     socket.join(room.code);
-    console.log(`[room:create] ${room.code} by ${username}`);
+    console.log(`[room:create] ${room.code} (${type}) by ${username}`);
 
     const state = getPublicState(room.code, socket.id);
     socket.emit('game:state', state);
