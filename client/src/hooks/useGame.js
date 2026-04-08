@@ -189,12 +189,16 @@ export function useGame(socket) {
     socket?.emit('chat:message', { text });
   }, [socket]);
 
+  const endGame = useCallback(() => {
+    socket?.emit('game:endGame');
+  }, [socket]);
+
   return {
     gameState,
     error,
     trickWinner,
     connectionEvent,
     messages,
-    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame, sendMessage },
+    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame, sendMessage, endGame },
   };
 }

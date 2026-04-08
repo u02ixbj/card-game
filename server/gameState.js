@@ -513,6 +513,20 @@ function getPublicState(code, playerId) {
   return publicRoom;
 }
 
+/**
+ * Host ends the game early and returns everyone to the lobby.
+ */
+function returnToLobby(code, hostId) {
+  const room = rooms.get(code);
+  if (!room) return { error: 'Room not found' };
+  if (room.hostId !== hostId) return { error: 'Only the host can end the game' };
+  if (room.phase === 'lobby') return { error: 'Game is not in progress' };
+
+  room.phase = 'lobby';
+  room.game = null;
+  return { room };
+}
+
 // ---------------------------------------------------------------------------
 // Exports
 // ---------------------------------------------------------------------------
@@ -530,5 +544,6 @@ module.exports = {
   placeBid,
   playCard,
   advanceToNextRound,
+  returnToLobby,
   getPublicState,
 };

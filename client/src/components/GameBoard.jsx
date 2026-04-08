@@ -63,6 +63,8 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
   }, [roundPhase, currentTrick, myHand, myIndex, players.length, noTrump, trumpCard]);
 
   const [pendingJoker, setPendingJoker] = useState(null);
+  const [confirmEnd, setConfirmEnd] = useState(false);
+  const isHost = myTopIndex === 0;
 
   function handlePlayCard(card) {
     // No-trump joker lead requires declaring a suit
@@ -221,6 +223,23 @@ export default function GameBoard({ gameState, error, trickWinner, connectionEve
       <div className={styles.chatArea}>
         <Chat messages={messages} onSend={actions.sendMessage} />
       </div>
+
+      {/* End game button — host only, fixed bottom-right */}
+      {isHost && (
+        <div className={styles.endGameBtn}>
+          {confirmEnd ? (
+            <div className={styles.endGameConfirm}>
+              <span>End the game?</span>
+              <button className="btn-danger" onClick={() => { actions.endGame(); setConfirmEnd(false); }}>Yes, end it</button>
+              <button className="btn-secondary" onClick={() => setConfirmEnd(false)}>Cancel</button>
+            </div>
+          ) : (
+            <button className={styles.endGameTrigger} onClick={() => setConfirmEnd(true)} title="End game">
+              ✕ End game
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Suit picker — shown when leading a joker in a no-trump round */}
       {pendingJoker && (

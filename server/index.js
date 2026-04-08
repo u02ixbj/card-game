@@ -20,6 +20,7 @@ const {
   placeBid,
   playCard,
   advanceToNextRound,
+  returnToLobby,
   getPublicState,
 } = require('./gameState');
 
@@ -239,6 +240,21 @@ io.on('connection', (socket) => {
     const result = advanceToNextRound(room.code, socket.id);
     if (result.error) return emitError(socket, result.error);
 
+    broadcastRoom(result.room);
+  });
+
+  /**
+   * Host ends the game early and returns all players to the lobby.
+   * Payload: none
+   */
+  socket.on('game:endGame', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+
+    const result = returnToLobby(room.code, socket.id);
+    if (result.error) return emitError(socket, result.error);
+
+    console.log(`[game:endGame] ${room.code}`);
     broadcastRoom(result.room);
   });
 
