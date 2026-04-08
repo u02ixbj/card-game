@@ -1,0 +1,461 @@
+.board {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 220px;
+  grid-template-areas:
+    "header header"
+    "main   chat";
+}
+
+/* Header */
+
+.header {
+  grid-area: header;
+  background: rgba(0,0,0,0.3);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: #fff;
+}
+
+.roundInfo {
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.playerLives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.playerChip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 0.2rem 0.65rem 0.2rem 0.5rem;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.activePlayer {
+  border-color: #f0c040;
+  background: rgba(240,192,64,0.12);
+}
+
+.eliminated {
+  opacity: 0.35;
+}
+
+.playerName {
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+.lives {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.lifeOn  { color: #f87171; }
+.lifeOff { color: rgba(255,255,255,0.2); }
+
+/* Main */
+
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+/* Piles */
+
+.piles {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+}
+
+.pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pileLabel {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pileCard {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  border-radius: 10px;
+}
+
+.pileCardClickable {
+  cursor: pointer;
+  outline: 3px solid transparent;
+  border-radius: 10px;
+  transition: outline-color 0.15s, transform 0.1s;
+}
+
+.pileCardClickable:hover {
+  outline-color: #f0c040;
+  transform: translateY(-4px);
+}
+
+.emptyPile {
+  width: 72px;
+  height: 100px;
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Action area */
+
+.actionArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.statusText {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.knockBtn {
+  font-size: 0.9rem;
+  padding: 0.4rem 1.2rem;
+}
+
+/* Hand */
+
+.handSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.handLabel {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scoreBadge {
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 0.1em 0.5em;
+  font-size: 0.85rem;
+  color: #f0c040;
+  font-weight: 700;
+}
+
+.hand {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.handCard {
+  transition: transform 0.1s;
+}
+
+.handCardDiscard {
+  cursor: pointer;
+}
+
+.handCardDiscard:hover {
+  transform: translateY(-8px);
+}
+
+/* Round over */
+
+.roundOver {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+  text-align: center;
+  max-width: 560px;
+  width: 100%;
+}
+
+.roundOver h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.blitzBanner {
+  background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  padding: 0.5rem 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #f87171;
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.5);
+}
+
+.oneTieAllTie {
+  background: linear-gradient(135deg, #f0c040, #d97706);
+  color: #111;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+}
+
+.summary {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: #fff;
+  width: 100%;
+}
+
+.summary th {
+  text-align: left;
+  padding: 0.3rem 0.6rem;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.summary td {
+  padding: 0.35rem 0.6rem;
+  vertical-align: middle;
+}
+
+.summaryOk td   { color: #86efac; font-weight: 600; }
+.summaryLost td { color: rgba(255,255,255,0.7); }
+.summaryBlitz td { color: #fde68a; font-weight: 700; }
+
+.handCells { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+.inlineCard {
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+
+.red   { color: #f87171; }
+.black { color: #fff; }
+
+.waiting {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.error {
+  background: rgba(255,255,255,0.9);
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+}
+
+/* Chat */
+
+.chatArea {
+  grid-area: chat;
+  overflow: hidden;
+}
+
+/* Blitz overlay */
+
+.blitzOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 200;
+}
+
+.blitzContent {
+  background: rgba(10,5,5,0.88);
+  border: 3px solid #ef4444;
+  border-radius: 16px;
+  padding: 1.5rem 2.5rem;
+  text-align: center;
+  animation: blitzPop 2.8s ease forwards;
+  box-shadow: 0 0 40px rgba(239,68,68,0.5);
+}
+
+.blitzTitle {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #f87171;
+  letter-spacing: 0.05em;
+}
+
+.blitzSub {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-top: 0.25rem;
+}
+
+@keyframes blitzPop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  12%  { opacity: 1; transform: scale(1.05); }
+  20%  { transform: scale(1); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+
+/* Knock announcement */
+
+.knockAnnouncement {
+  position: fixed;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.78);
+  color: #f0c040;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.55rem 1.4rem;
+  border-radius: 10px;
+  pointer-events: none;
+  animation: fadeInOut 2.5s ease forwards;
+  z-index: 150;
+  white-space: nowrap;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.88); }
+  14%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  72%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* End game button */
+
+.endGameBtn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.endGameTrigger {
+  background: rgba(0,0,0,0.45);
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.endGameTrigger:hover {
+  background: rgba(180,30,30,0.75);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.endGameConfirm {
+  background: rgba(20,10,10,0.9);
+  border: 1px solid rgba(255,100,100,0.3);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 140px;
+}
+
+.endGameConfirm span {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.endGameConfirm button {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .board {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "header"
+      "main"
+      "chat";
+  }
+
+  .chatArea {
+    max-height: 150px;
+  }
+
+  .header {
+    padding: 0.4rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .playerChip {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.4rem;
+  }
+
+  .piles {
+    gap: 1.25rem;
+  }
+
+  .main {
+    padding: 0.75rem;
+    gap: 0.85rem;
+  }
+}

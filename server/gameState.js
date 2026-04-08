@@ -526,6 +526,8 @@ function returnToLobby(code, hostId) {
 
   room.phase = 'lobby';
   room.game = null;
+  room.game31 = null;
+  room.game31Winner = null;
   return { room };
 }
 

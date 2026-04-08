@@ -24,6 +24,16 @@ const {
   getPublicState,
 } = require('./gameState');
 
+const {
+  startGame31,
+  draw31,
+  takeDiscard31,
+  discard31,
+  knock31,
+  nextRound31,
+  getPublicState31,
+} = require('./game31State');
+
 const PORT = process.env.PORT || 3001;
 
 const app = express();
@@ -49,11 +59,14 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 /**
  * Emits the current public state to every player in the room.
+ * Routes to the correct state builder based on game type.
  */
 function broadcastRoom(room) {
   for (const player of room.players) {
     if (player.connected) {
-      const state = getPublicState(room.code, player.id);
+      const state = room.gameType === '31'
+        ? getPublicState31(room, player.id)
+        : getPublicState(room.code, player.id);
       io.to(player.id).emit('game:state', state);
     }
   }
@@ -175,10 +188,12 @@ io.on('connection', (socket) => {
     const room = getRoomByPlayerId(socket.id);
     if (!room) return emitError(socket, 'Not in a room');
 
-    const result = startGame(room.code, socket.id);
+    const result = room.gameType === '31'
+      ? startGame31(room, socket.id)
+      : startGame(room.code, socket.id);
     if (result.error) return emitError(socket, result.error);
 
-    console.log(`[game:start] ${room.code}`);
+    console.log(`[game:start] ${room.code} (${room.gameType})`);
     broadcastRoom(result.room);
   });
 
@@ -238,9 +253,46 @@ io.on('connection', (socket) => {
     const room = getRoomByPlayerId(socket.id);
     if (!room) return emitError(socket, 'Not in a room');
 
-    const result = advanceToNextRound(room.code, socket.id);
+    const result = room.gameType === '31'
+      ? nextRound31(room, socket.id)
+      : advanceToNextRound(room.code, socket.id);
     if (result.error) return emitError(socket, result.error);
 
+    broadcastRoom(result.room);
+  });
+
+  // --- 31-specific actions ---
+
+  socket.on('game31:draw', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+    const result = draw31(room, socket.id);
+    if (result.error) return emitError(socket, result.error);
+    broadcastRoom(result.room);
+  });
+
+  socket.on('game31:takeDiscard', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+    const result = takeDiscard31(room, socket.id);
+    if (result.error) return emitError(socket, result.error);
+    broadcastRoom(result.room);
+  });
+
+  socket.on('game31:discard', ({ card } = {}) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+    if (!card?.rank || !card?.suit) return emitError(socket, 'Invalid card');
+    const result = discard31(room, socket.id, card);
+    if (result.error) return emitError(socket, result.error);
+    broadcastRoom(result.room);
+  });
+
+  socket.on('game31:knock', () => {
+    const room = getRoomByPlayerId(socket.id);
+    if (!room) return emitError(socket, 'Not in a room');
+    const result = knock31(room, socket.id);
+    if (result.error) return emitError(socket, result.error);
     broadcastRoom(result.room);
   });
 

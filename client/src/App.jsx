@@ -3,6 +3,7 @@ import { SocketProvider, useSocket } from './context/SocketContext';
 import { useGame } from './hooks/useGame';
 import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
+import GameBoard31 from './components/GameBoard31';
 import GameOver from './components/GameOver';
 
 function AppInner() {
@@ -15,6 +16,17 @@ function AppInner() {
 
   if (gameState.phase === 'finished') {
     return <GameOver gameState={gameState} onExit={actions.clearGame} />;
+  }
+
+  if (gameState.gameType === '31') {
+    return (
+      <GameBoard31
+        gameState={gameState}
+        error={error}
+        messages={messages}
+        actions={actions}
+      />
+    );
   }
 
   return (

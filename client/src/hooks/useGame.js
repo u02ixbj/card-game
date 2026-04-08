@@ -193,12 +193,28 @@ export function useGame(socket) {
     socket?.emit('game:endGame');
   }, [socket]);
 
+  const draw31 = useCallback(() => {
+    socket?.emit('game31:draw');
+  }, [socket]);
+
+  const takeDiscard31 = useCallback(() => {
+    socket?.emit('game31:takeDiscard');
+  }, [socket]);
+
+  const discard31 = useCallback((card) => {
+    socket?.emit('game31:discard', { card });
+  }, [socket]);
+
+  const knock31 = useCallback(() => {
+    socket?.emit('game31:knock');
+  }, [socket]);
+
   return {
     gameState,
     error,
     trickWinner,
     connectionEvent,
     messages,
-    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame, sendMessage, endGame },
+    actions: { createRoom, joinRoom, updateConfig, setCohost, kickPlayer, startGame, placeBid, playCard, nextRound, clearGame, sendMessage, endGame, draw31, takeDiscard31, discard31, knock31 },
   };
 }
