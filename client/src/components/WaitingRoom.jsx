@@ -4,7 +4,8 @@ import Chat from './Chat';
 import styles from './WaitingRoom.module.css';
 
 export default function WaitingRoom({ gameState, actions, error, messages }) {
-  const { code, players, config, myIndex, cohosts } = gameState;
+  const { code, players, config, myIndex, cohosts, gameType } = gameState;
+  const isBB = gameType !== '31';
   const isHost = myIndex === 0;
 
   // Local state keeps inputs responsive; syncs from server config on change
@@ -88,89 +89,93 @@ export default function WaitingRoom({ gameState, actions, error, messages }) {
         </ul>
         <p className={styles.count}>{players.length} / 8 players</p>
 
-        <div className={styles.config}>
-          <h3>Game Settings</h3>
+        {isBB && (
+          <>
+            <div className={styles.config}>
+              <h3>Game Settings</h3>
 
-          <div className={styles.configRow}>
-            <span>Min cards per round</span>
-            {isHost ? (
-              <input
-                type="number"
-                min={1}
-                value={localMinCards}
-                onChange={handleMinCards}
-                className={styles.numInput}
-              />
-            ) : (
-              <span className={styles.readOnly}>{config.minCards}</span>
-            )}
-          </div>
+              <div className={styles.configRow}>
+                <span>Min cards per round</span>
+                {isHost ? (
+                  <input
+                    type="number"
+                    min={1}
+                    value={localMinCards}
+                    onChange={handleMinCards}
+                    className={styles.numInput}
+                  />
+                ) : (
+                  <span className={styles.readOnly}>{config.minCards}</span>
+                )}
+              </div>
 
-          <div className={styles.configRow}>
-            <span>Peak cards per round</span>
-            {isHost ? (
-              <input
-                type="number"
-                min={1}
-                max={52}
-                value={localPeakCards}
-                onChange={handlePeakInput}
-                className={styles.numInput}
-              />
-            ) : (
-              <span className={styles.readOnly}>{config.peakCards ?? 8}</span>
-            )}
-          </div>
+              <div className={styles.configRow}>
+                <span>Peak cards per round</span>
+                {isHost ? (
+                  <input
+                    type="number"
+                    min={1}
+                    max={52}
+                    value={localPeakCards}
+                    onChange={handlePeakInput}
+                    className={styles.numInput}
+                  />
+                ) : (
+                  <span className={styles.readOnly}>{config.peakCards ?? 8}</span>
+                )}
+              </div>
 
-          <div className={styles.configRow}>
-            <span>No-trump rounds</span>
-            {isHost ? (
-              <select
-                value={config.noTrumpRounds}
-                onChange={e => actions.updateConfig({ noTrumpRounds: Number(e.target.value) })}
-                className={styles.select}
-              >
-                <option value={0}>0</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-            ) : (
-              <span className={styles.readOnly}>{config.noTrumpRounds}</span>
-            )}
-          </div>
+              <div className={styles.configRow}>
+                <span>No-trump rounds</span>
+                {isHost ? (
+                  <select
+                    value={config.noTrumpRounds}
+                    onChange={e => actions.updateConfig({ noTrumpRounds: Number(e.target.value) })}
+                    className={styles.select}
+                  >
+                    <option value={0}>0</option>
+                    <option value={1}>1</option>
+                    <option value={2}>2</option>
+                  </select>
+                ) : (
+                  <span className={styles.readOnly}>{config.noTrumpRounds}</span>
+                )}
+              </div>
 
-          <div className={styles.configRow}>
-            <span>Use jokers</span>
-            {isHost ? (
-              <input
-                type="checkbox"
-                checked={config.useJokers ?? false}
-                onChange={e => actions.updateConfig({ useJokers: e.target.checked })}
-              />
-            ) : (
-              <span className={styles.readOnly}>{config.useJokers ? 'Yes' : 'No'}</span>
-            )}
-          </div>
-        </div>
-
-        {preview.length > 0 && (
-          <div className={styles.preview}>
-            <p className={styles.previewLabel}>
-              Round sequence — {preview.length} rounds, peak {resolvedPeak} cards
-            </p>
-            <div className={styles.sequence}>
-              {preview.map((r, i) => (
-                <span
-                  key={i}
-                  className={`${styles.pill} ${r.noTrump ? styles.pillNT : ''} ${r.cardsPerPlayer === resolvedPeak ? styles.pillPeak : ''}`}
-                  title={r.noTrump ? 'No trump' : ''}
-                >
-                  {r.cardsPerPlayer}
-                  {r.noTrump ? <sup>NT</sup> : ''}
-                </span>
-              ))}
+              <div className={styles.configRow}>
+                <span>Use jokers</span>
+                {isHost ? (
+                  <input
+                    type="checkbox"
+                    checked={config.useJokers ?? false}
+                    onChange={e => actions.updateConfig({ useJokers: e.target.checked })}
+                  />
+                ) : (
+                  <span className={styles.readOnly}>{config.useJokers ? 'Yes' : 'No'}</span>
+                )}
+              </div>
             </div>
-          </div>
+
+            {preview.length > 0 && (
+              <div className={styles.preview}>
+                <p className={styles.previewLabel}>
+                  Round sequence — {preview.length} rounds, peak {resolvedPeak} cards
+                </p>
+                <div className={styles.sequence}>
+                  {preview.map((r, i) => (
+                    <span
+                      key={i}
+                      className={`${styles.pill} ${r.noTrump ? styles.pillNT : ''} ${r.cardsPerPlayer === resolvedPeak ? styles.pillPeak : ''}`}
+                      title={r.noTrump ? 'No trump' : ''}
+                    >
+                      {r.cardsPerPlayer}
+                      {r.noTrump ? <sup>NT</sup> : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         <button

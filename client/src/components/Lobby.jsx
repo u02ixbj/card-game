@@ -32,8 +32,8 @@ export default function Lobby({ onCreate, onJoin, error }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Bugger Bridge</h1>
-        <p className={styles.subtitle}>A card game suite</p>
+        <h1 className={styles.title}>Card Games</h1>
+        <p className={styles.subtitle}>Choose a game and play with friends</p>
 
         {!mode && (
           <div className={styles.buttons}>
