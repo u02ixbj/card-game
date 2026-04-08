@@ -101,8 +101,7 @@ io.on('connection', (socket) => {
     socket.join(room.code);
     console.log(`[room:create] ${room.code} (${type}) by ${username}`);
 
-    const state = getPublicState(room.code, socket.id);
-    socket.emit('game:state', state);
+    broadcastRoom(room);
   });
 
   /**

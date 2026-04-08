@@ -69,7 +69,7 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
   }, [knockerIndex]);
   // ── End hooks ──
 
-  if (phase === 'lobby') {
+  if (phase === 'lobby' || !game31) {
     return <WaitingRoom gameState={gameState} actions={actions} error={error} messages={messages} />;
   }
 

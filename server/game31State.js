@@ -330,6 +330,7 @@ function getPublicState31(room, playerId) {
     players: room.players.map(p => ({ username: p.username, connected: p.connected })),
     myIndex: pi,
     cohosts: room.cohosts,
+    config: room.config,
     winner: room.game31Winner ?? null,
     game31: g ? {
       phase: g.phase,
