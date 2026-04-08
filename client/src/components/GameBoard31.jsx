@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Card from './Card';
 import Chat from './Chat';
 import WaitingRoom from './WaitingRoom';
@@ -17,51 +17,46 @@ function Lives({ count, max = 3 }) {
   );
 }
 
+function EndGameButton({ onEnd }) {
+  const [confirm, setConfirm] = useState(false);
+  return (
+    <div className={styles.endGameBtn}>
+      {confirm ? (
+        <div className={styles.endGameConfirm}>
+          <span>End the game?</span>
+          <button className="btn-danger" onClick={() => { onEnd(); setConfirm(false); }}>Yes, end it</button>
+          <button className="btn-secondary" onClick={() => setConfirm(false)}>Cancel</button>
+        </div>
+      ) : (
+        <button className={styles.endGameTrigger} onClick={() => setConfirm(true)}>✕ End game</button>
+      )}
+    </div>
+  );
+}
+
 export default function GameBoard31({ gameState, error, messages, actions }) {
   const { phase, players, myIndex, cohosts, game31 } = gameState;
 
-  if (phase === 'lobby') {
-    return <WaitingRoom gameState={gameState} actions={actions} error={error} messages={messages} />;
-  }
-
-  const {
-    phase: g31phase,
-    roundNumber,
-    dealerIndex,
-    currentPlayerIndex,
-    lives,
-    active,
-    knockerIndex,
-    blitzerIndex,
-    stockCount,
-    topDiscard,
-    myHand,
-    myScore,
-    roundResult,
-  } = game31;
-
-  const isMyTurn = currentPlayerIndex === myIndex;
-  const isDrawing = g31phase === 'drawing' && isMyTurn;
-  const isDiscarding = g31phase === 'discarding' && isMyTurn;
-  const isRoundOver = g31phase === 'roundOver';
-  const canAdvance = myIndex === 0 || cohosts?.includes(myIndex);
-
-  // Blitz announcement overlay
+  // ── All hooks must come before any early return ──
   const [showBlitz, setShowBlitz] = useState(false);
   const [blitzName, setBlitzName] = useState('');
+  const [showKnock, setShowKnock] = useState(false);
+  const [knockName, setKnockName] = useState('');
+  const prevKnocker = useRef(null);
+
+  const g31phase      = game31?.phase;
+  const roundResult   = game31?.roundResult;
+  const knockerIndex  = game31?.knockerIndex ?? null;
+
   useEffect(() => {
-    if (isRoundOver && roundResult?.blitzerIndex !== null && roundResult?.blitzerIndex !== undefined) {
+    if (g31phase === 'roundOver' && roundResult?.blitzerIndex != null) {
       setBlitzName(players[roundResult.blitzerIndex]?.username ?? 'Someone');
       setShowBlitz(true);
       const t = setTimeout(() => setShowBlitz(false), 2800);
       return () => clearTimeout(t);
     }
-  }, [isRoundOver, roundResult?.blitzerIndex]);
+  }, [g31phase, roundResult?.blitzerIndex]);
 
-  // Knock announcement
-  const [showKnock, setShowKnock] = useState(false);
-  const [knockName, setKnockName] = useState('');
-  const prevKnocker = React.useRef(null);
   useEffect(() => {
     if (knockerIndex !== null && knockerIndex !== prevKnocker.current) {
       prevKnocker.current = knockerIndex;
@@ -72,14 +67,35 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
     }
     if (knockerIndex === null) prevKnocker.current = null;
   }, [knockerIndex]);
+  // ── End hooks ──
+
+  if (phase === 'lobby') {
+    return <WaitingRoom gameState={gameState} actions={actions} error={error} messages={messages} />;
+  }
+
+  const {
+    roundNumber,
+    dealerIndex,
+    currentPlayerIndex,
+    lives,
+    active,
+    blitzerIndex,
+    stockCount,
+    topDiscard,
+    myHand,
+    myScore,
+  } = game31;
+
+  const isMyTurn    = currentPlayerIndex === myIndex;
+  const isDrawing   = g31phase === 'drawing' && isMyTurn;
+  const isDiscarding = g31phase === 'discarding' && isMyTurn;
+  const isRoundOver = g31phase === 'roundOver';
+  const canAdvance  = myIndex === 0 || cohosts?.includes(myIndex);
 
   function statusText() {
-    if (isDrawing) return knockerIndex !== null ? 'Your final turn — draw or take the discard' : 'Your turn — draw, take the discard, or knock';
+    if (isDrawing)    return knockerIndex !== null ? 'Your final turn — draw or take the discard' : 'Your turn — draw, take the discard, or knock';
     if (isDiscarding) return 'Click a card in your hand to discard it';
-    if (g31phase === 'drawing' || g31phase === 'discarding') {
-      const name = players[currentPlayerIndex]?.username ?? '…';
-      return `Waiting for ${name}…`;
-    }
+    if (g31phase === 'drawing' || g31phase === 'discarding') return `Waiting for ${players[currentPlayerIndex]?.username ?? '…'}…`;
     return '';
   }
 
@@ -90,8 +106,13 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
         <span className={styles.roundInfo}>Round {roundNumber}</span>
         <div className={styles.playerLives}>
           {players.map((p, i) => (
-            <div key={i} className={`${styles.playerChip} ${!active[i] ? styles.eliminated : ''} ${i === currentPlayerIndex && !isRoundOver ? styles.activePlayer : ''}`}>
-              <span className={styles.playerName}>{p.username}{i === dealerIndex ? ' D' : ''}{i === myIndex ? ' (you)' : ''}</span>
+            <div
+              key={i}
+              className={`${styles.playerChip} ${!active[i] ? styles.eliminated : ''} ${i === currentPlayerIndex && !isRoundOver ? styles.activePlayer : ''}`}
+            >
+              <span className={styles.playerName}>
+                {p.username}{i === dealerIndex ? ' D' : ''}{i === myIndex ? ' (you)' : ''}
+              </span>
               <Lives count={lives[i]} />
             </div>
           ))}
@@ -105,7 +126,6 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
           <>
             {/* Piles */}
             <div className={styles.piles}>
-              {/* Stock pile */}
               <div className={styles.pile}>
                 <p className={styles.pileLabel}>Stock ({stockCount})</p>
                 {stockCount > 0 ? (
@@ -122,7 +142,6 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
                 )}
               </div>
 
-              {/* Discard pile */}
               <div className={styles.pile}>
                 <p className={styles.pileLabel}>Discard</p>
                 {topDiscard ? (
@@ -140,7 +159,7 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
               </div>
             </div>
 
-            {/* Status + actions */}
+            {/* Status + knock button */}
             <div className={styles.actionArea}>
               <p className={styles.statusText}>{statusText()}</p>
               {isDrawing && knockerIndex === null && (
@@ -179,7 +198,7 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
             {roundResult.oneTieAllTie && (
               <div className={styles.oneTieAllTie}>One Tie, All Tie! Everyone's back with 3 lives!</div>
             )}
-            {roundResult.blitzerIndex !== null && (
+            {roundResult.blitzerIndex != null && (
               <div className={styles.blitzBanner}>
                 💥 {players[roundResult.blitzerIndex]?.username} got 31!
               </div>
@@ -200,8 +219,12 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
                   if (!roundResult.hands[i] || roundResult.hands[i].length === 0) return null;
                   const hand = roundResult.hands[i];
                   const score = roundResult.scores[i];
-                  const lost = roundResult.loserIndices.includes(i) || (roundResult.blitzerIndex !== null && i !== roundResult.blitzerIndex && active[i]);
                   const isBlitzer = roundResult.blitzerIndex === i;
+                  const lost = isBlitzer
+                    ? false
+                    : roundResult.blitzerIndex != null
+                      ? active[i]
+                      : roundResult.loserIndices.includes(i);
                   return (
                     <tr key={i} className={isBlitzer ? styles.summaryBlitz : lost ? styles.summaryLost : styles.summaryOk}>
                       <td>{p.username}{i === myIndex ? ' (you)' : ''}</td>
@@ -253,25 +276,8 @@ export default function GameBoard31({ gameState, error, messages, actions }) {
         </div>
       )}
 
-      {/* End game (host only) */}
+      {/* End game button — host only */}
       {myIndex === 0 && !isRoundOver && <EndGameButton onEnd={actions.endGame} />}
-    </div>
-  );
-}
-
-function EndGameButton({ onEnd }) {
-  const [confirm, setConfirm] = useState(false);
-  return (
-    <div className={styles.endGameBtn}>
-      {confirm ? (
-        <div className={styles.endGameConfirm}>
-          <span>End the game?</span>
-          <button className="btn-danger" onClick={() => { onEnd(); setConfirm(false); }}>Yes, end it</button>
-          <button className="btn-secondary" onClick={() => setConfirm(false)}>Cancel</button>
-        </div>
-      ) : (
-        <button className={styles.endGameTrigger} onClick={() => setConfirm(true)}>✕ End game</button>
-      )}
     </div>
   );
 }
