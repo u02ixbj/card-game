@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { generateRoundSequence, autoPeak } from '../utils/gameUtils';
+import { generateRoundSequence } from '../utils/gameUtils';
 import Chat from './Chat';
 import styles from './WaitingRoom.module.css';
 
@@ -8,31 +8,22 @@ export default function WaitingRoom({ gameState, actions, error, messages }) {
   const isHost = myIndex === 0;
 
   // Local state keeps inputs responsive; syncs from server config on change
-  const [peakAuto, setPeakAuto] = useState(config.peakCards === null);
   const [localMinCards, setLocalMinCards] = useState(String(config.minCards));
-  const [localPeakCards, setLocalPeakCards] = useState(String(config.peakCards ?? autoPeak(players.length)));
+  const [localPeakCards, setLocalPeakCards] = useState(String(config.peakCards ?? 8));
 
   // Keep local inputs in sync if config changes from server (e.g. after reconnect)
   useEffect(() => { setLocalMinCards(String(config.minCards)); }, [config.minCards]);
-  useEffect(() => {
-    if (config.peakCards !== null) setLocalPeakCards(String(config.peakCards));
-  }, [config.peakCards]);
+  useEffect(() => { setLocalPeakCards(String(config.peakCards ?? 8)); }, [config.peakCards]);
 
   const numPlayers = players.length;
-  const resolvedPeak = peakAuto ? autoPeak(numPlayers) : (parseInt(localPeakCards, 10) || autoPeak(numPlayers));
+  const resolvedPeak = parseInt(localPeakCards, 10) || 8;
 
   const preview = generateRoundSequence(
     numPlayers,
-    peakAuto ? null : (parseInt(localPeakCards, 10) || null),
+    parseInt(localPeakCards, 10) || null,
     config.noTrumpRounds,
     parseInt(localMinCards, 10) || config.minCards,
   );
-
-  function handlePeakAutoChange(e) {
-    const auto = e.target.checked;
-    setPeakAuto(auto);
-    actions.updateConfig({ peakCards: auto ? null : (parseInt(localPeakCards, 10) || autoPeak(numPlayers)) });
-  }
 
   function handlePeakInput(e) {
     const raw = e.target.value;
@@ -118,30 +109,16 @@ export default function WaitingRoom({ gameState, actions, error, messages }) {
           <div className={styles.configRow}>
             <span>Peak cards per round</span>
             {isHost ? (
-              <span className={styles.peakControl}>
-                <label className={styles.autoLabel}>
-                  <input
-                    type="checkbox"
-                    checked={peakAuto}
-                    onChange={handlePeakAutoChange}
-                  />
-                  auto ({autoPeak(numPlayers)})
-                </label>
-                {!peakAuto && (
-                  <input
-                    type="number"
-                    min={1}
-                    max={52}
-                    value={localPeakCards}
-                    onChange={handlePeakInput}
-                    className={styles.numInput}
-                  />
-                )}
-              </span>
+              <input
+                type="number"
+                min={1}
+                max={52}
+                value={localPeakCards}
+                onChange={handlePeakInput}
+                className={styles.numInput}
+              />
             ) : (
-              <span className={styles.readOnly}>
-                {config.peakCards ?? `auto (${autoPeak(numPlayers)})`}
-              </span>
+              <span className={styles.readOnly}>{config.peakCards ?? 8}</span>
             )}
           </div>
 

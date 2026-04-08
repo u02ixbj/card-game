@@ -186,22 +186,6 @@
   font-weight: 700;
 }
 
-.peakControl {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.autoLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-}
-
 /* Sequence preview */
 
 .preview {

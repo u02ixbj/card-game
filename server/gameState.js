@@ -62,7 +62,7 @@ function createRoom(hostId, hostUsername) {
     hostId,
     cohosts: [],   // array of player indices that can advance rounds
     config: {
-      peakCards: null,   // null = auto (floor(52/numPlayers))
+      peakCards: 8,
       noTrumpRounds: 0,  // 0, 1, or 2
       minCards: 3,
       useJokers: false,
